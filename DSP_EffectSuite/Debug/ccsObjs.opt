@@ -1,0 +1,8 @@
+"./src/aic3204.obj"
+"./src/audioLoopTest.obj"
+"./src/dma.obj"
+"./src/lcd.obj"
+"../VC5502.cmd"
+-lrts55x.lib
+-lezdsp5502bsl.lib
+-lcsl5502x.lib
