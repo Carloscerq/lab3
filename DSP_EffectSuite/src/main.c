@@ -1,13 +1,3 @@
-/*
- * Copyright (C) 2003 Texas Instruments Incorporated
- * All Rights Reserved
- */
-/*
- *---------main_dma1.c---------
- * This example demostrates simple DMA transfer of single frame of
- * 128 elements, 16 bit each.
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,6 +7,7 @@
 #include "aic3204.h"
 #include "dma.h"
 #include "define.h"
+#include "i2cgpio.h"
 
 //---------Global constants---------
 #define SF48KHz         48000
@@ -35,6 +26,9 @@ Int16 buffReceive[BUFF_SIZE];
 #pragma DATA_SECTION(buffTransmit, "dmaMem")
 Int16 buffTransmit[BUFF_SIZE];
 
+//---------Extern definition---------
+extern Int16 oled_start();
+
 //---------Function prototypes---------
 Int16 dsp_process(Int16 *input, Int16 *output, Int16 size);
 
@@ -46,6 +40,7 @@ void main(void)
 
     Init_AIC3204(SF48KHz, DAC_GAIN, ADC_GAIN);
     configAudioDma(buffReceive, buffTransmit);
+    initI2C();
 
     Int16 i;
     /* Initialize source and destination buffers */
@@ -53,8 +48,10 @@ void main(void)
         buffReceive[i] = 0;
         buffTransmit[i] = 0;
     }
+
     startAudioDma();
     EZDSP5502_MCBSP_init( );  // Configure and start McBSP
+    oled_start();
 
     while(1){
         dsp_process(buffReceive, buffTransmit, BUFF_SIZE);
