@@ -1,9 +1,11 @@
 "./src/aic3204.obj"
+"./src/buttons.obj"
 "./src/dma.obj"
-"./src/i2cgpio.obj"
+"./src/dsp_effects.obj"
 "./src/lcd.obj"
 "./src/main.obj"
 "./src/oled.obj"
+"./src/state_machine.obj"
 "../VC5502.cmd"
 -lrts55x.lib
 -lezdsp5502bsl.lib

@@ -1,13 +1,14 @@
+#include <buttons.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "ezdsp5502.h"
 #include "ezdsp5502_mcbsp.h"
 
 #include "aic3204.h"
 #include "dma.h"
 #include "define.h"
-#include "i2cgpio.h"
+#include "buttons.h"
+#include "state_machine.h"
 
 //---------Global constants---------
 #define SF48KHz         48000
@@ -40,7 +41,7 @@ void main(void)
 
     Init_AIC3204(SF48KHz, DAC_GAIN, ADC_GAIN);
     configAudioDma(buffReceive, buffTransmit);
-    initI2C();
+    initI2CButtons();
 
     Int16 i;
     /* Initialize source and destination buffers */
@@ -52,8 +53,10 @@ void main(void)
     startAudioDma();
     EZDSP5502_MCBSP_init( );  // Configure and start McBSP
     oled_start();
+    stateMachineInit();
 
     while(1){
+        stateMachineRun();
         dsp_process(buffReceive, buffTransmit, BUFF_SIZE);
     }
 }

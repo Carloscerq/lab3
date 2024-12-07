@@ -1,6 +1,8 @@
 # FIXED
 
 src/main.obj: ../src/main.c
+src/main.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/buttons.h
+src/main.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/tistdtypes.h
 src/main.obj: C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/stdio.h
 src/main.obj: C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/linkage.h
 src/main.obj: C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/stdarg.h
@@ -10,7 +12,6 @@ src/main.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/c
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/_csl.h
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_chiphal.h
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_std.h
-src/main.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/tistdtypes.h
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_stdhal.h
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_datasz.h
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_chipdat.h
@@ -46,9 +47,13 @@ src/main.obj: C:/Users/felip/Documents/Projects/code_composer/include/ezdsp5502_
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/aic3204.h
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/dma.h
 src/main.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/define.h
-src/main.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/i2cgpio.h
+src/main.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/state_machine.h
 
 ../src/main.c:
+
+C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/buttons.h:
+
+C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/tistdtypes.h:
 
 C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/stdio.h:
 
@@ -67,8 +72,6 @@ C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/_csl.h:
 C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_chiphal.h:
 
 C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_std.h:
-
-C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/tistdtypes.h:
 
 C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_stdhal.h:
 
@@ -140,5 +143,5 @@ C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/dma.h:
 
 C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/define.h:
 
-C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/i2cgpio.h:
+C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/state_machine.h:
 

@@ -16,17 +16,6 @@ Int16 oled_start(){
     osd9616_init();
     osd9616_send(0x00,CMD_SCROLL_DISABLE);     // Deactivate Scrolling
 
-    // Escreve "STARTING" na página 0
-    oled_fillPage(0, 0xFF);
-    oled_writeText("STARTING LAB", 0);
-
-    // Adiciona espaçamento
-    oled_addSpace(5);
-
-    // Escreve "DSP TMS" na página 1
-    oled_fillPage(1, 0xFF);
-    oled_writeText("DSP TMS", 1);
-
     return 0;
 }
 
