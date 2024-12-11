@@ -1,10 +1,10 @@
 ******************************************************************************
               TMS320C55x Linker PC v4.4.1                      
 ******************************************************************************
->> Linked Sat Dec 07 18:36:42 2024
+>> Linked Mon Dec 09 20:07:56 2024
 
 OUTPUT FILE NAME:   <DSP_EffectSuite.out>
-ENTRY POINT SYMBOL: "_c_int00"  address: 000342fe
+ENTRY POINT SYMBOL: "_c_int00"  address: 0000480e
 
 
 MEMORY CONFIGURATION
@@ -12,18 +12,19 @@ MEMORY CONFIGURATION
          name            origin    length      used     unused   attr    fill
                         (bytes)   (bytes)    (bytes)   (bytes)
 ----------------------  --------  ---------  --------  --------  ----  --------
-  MMR                   00000000   000000c0  00000000  000000c0  RW  
-  DARAM                 000000c0   0000ff40  00003df2  0000c14e  RW  
-  SARAM                 00030000   0001e000  000044e0  00019b20  RW  
-  EMIF_CS0              00050000   007b0000  00000000  007b0000  RW  
-  EMIF_CS2              00800000   00400000  00000000  00400000  RW  
-  EMIF_CS3              00c00000   00200000  00000000  00200000  RW  
-  EMIF_CS4              00e00000   00100000  00000000  00100000  RW  
-  EMIF_CS5              00f00000   000e0000  00000000  000e0000  RW  
-  SAROM_0               00fe0000   00008000  00000000  00008000  R  X
-  SAROM_1               00fe8000   00008000  00000000  00008000  R  X
-  SAROM_2               00ff0000   00008000  00000000  00008000  R  X
-  SAROM_3               00ff8000   00008000  00000000  00008000  R  X
+PAGE 0:
+  MMR                   00000000   000000c0  00000000  000000c0  RWIX
+  BTRSVD                000000c0   00000240  00000100  00000140  RWIX
+  DARAM                 00000300   0000fb00  00008ab2  0000704e  RWIX
+  VECS                  0000fe00   00000200  00000100  00000100  RWIX
+  CE0                   00010000   003f0000  00000000  003f0000  RWIX
+  CE1                   00400000   00400000  00000000  00400000  RWIX
+  CE2                   00800000   00400000  00000000  00400000  RWIX
+  CE3                   00c00000   003f8000  00000000  003f8000  RWIX
+  PDROM                 00ff8000   00008000  00000000  00008000  R IX
+
+PAGE 2:
+  IOPORT                00000000   00020000  00000000  00020000  RWI 
 
 
 SECTION ALLOCATION MAP
@@ -32,149 +33,164 @@ SECTION ALLOCATION MAP
 output                                                          attributes/
 section   page  orgn(bytes) orgn(words) len(bytes) len(words)   input sections
 --------  ----  ----------- ----------- ---------- ----------   --------------
-.stack       0   [ 000000c0 ]  00000060          *   00001000   UNINITIALIZED
-                 [ 000000c0 ]  00000060          *   00001000   --HOLE--
+vectors      0     000000c0  [ 00000060 ] 00000100          *   
+                   000000c0  [ 00000060 ] 00000100          *   rts55x.lib : vectors.obj (vectors)
 
-.data        0   [ 000000c0 ]  00000060          *   00000000   UNINITIALIZED
+.text        0     00000300  [ 00000180 ] 00004728          *   
+                   00000300  [ 00000180 ] 000015a4          *   rts55x.lib : _printfi.obj (.text)
+                   000018a4  [ 00000c52 ] 000003cc          *              : divd.obj (.text)
+                   00001c70  [ 00000e38 ] 00000284          *   state_machine.obj (.text)
+                   00001ef4  [ 00000f7a ] 00000261          *   csl5502x.lib : mcbsp_rst.obj (.text:MCBSP_reset)
+                   00002155  [ 000010aa+] 0000025e          *   rts55x.lib : llmpy.obj (.text)
+                   000023b3  [ 000011d9+] 0000025a          *              : addd.obj (.text)
+                   0000260d  [ 00001306+] 0000021a          *   aic3204.obj (.text)
+                   00002827  [ 00001413+] 0000020c          *   ezdsp5502bsl.lib : ezdsp5502_gpio.obj (.text)
+                   00002a33  [ 00001519+] 000001ea          *   rts55x.lib : cmpd.obj (.text)
+                   00002c1d  [ 0000160e+] 000001d1          *   oled.obj (.text)
+                   00002dee  [ 000016f7 ] 00000002          *   rts55x.lib : vectors.obj (.text)
+                   00002df0  [ 000016f8 ] 000001ca          *   csl5502x.lib : dma_reset.obj (.text:DMA_reset)
+                   00002fba  [ 000017dd ] 000001af          *   dma.obj (.text)
+                   00003169  [ 000018b4+] 00000002          *   vectors_dma4.obj (.text)
+                   0000316b  [ 000018b5 ] 00000001          *   --HOLE-- [fill = 20]
+                   0000316c  [ 000018b6 ] 0000018e          *   csl5502x.lib : i2c_write.obj (.text:I2C_write)
+                   000032fa  [ 0000197d ] 0000018b          *   lcd.obj (.text)
+                   00003485  [ 00001a42 ] 00000003          *   --HOLE-- [fill = 20]
+                   00003488  [ 00001a44 ] 0000015d          *   csl5502x.lib : i2c_read.obj (.text:I2C_read)
+                   000035e5  [ 00001af2+] 0000014e          *   ezdsp5502bsl.lib : ezdsp5502_i2cgpio.obj (.text)
+                   00003733  [ 00001b99+] 0000014c          *   rts55x.lib : mpyd.obj (.text)
+                   0000387f  [ 00001c3f ] 00000001          *   --HOLE-- [fill = 20]
+                   00003880  [ 00001c40 ] 00000130          *   csl5502x.lib : mcbsp_cfg.obj (.text:MCBSP_config)
+                   000039b0  [ 00001cd8 ] 0000010e          *                : dma_cfg.obj (.text:DMA_config)
+                   00003abe  [ 00001d5f ] 00000002          *   --HOLE-- [fill = 20]
+                   00003ac0  [ 00001d60 ] 000000ee          *                : mcbsp_open.obj (.text:MCBSP_open)
+                   00003bae  [ 00001dd7 ] 000000ce          *   main.obj (.text)
+                   00003c7c  [ 00001e3e ] 000000cb          *   csl5502x.lib : dma_open.obj (.text:DMA_open)
+                   00003d47  [ 00001ea3+] 000000ba          *   ezdsp5502bsl.lib : ezdsp5502_mcbsp.obj (.text)
+                   00003e01  [ 00001f00+] 000000a1          *   rts55x.lib : divul.obj (.text)
+                   00003ea2  [ 00001f51 ] 0000008e          *   buttons.obj (.text)
+                   00003f30  [ 00001f98 ] 00000089          *   csl5502x.lib : irq_pluga.obj (.text)
+                   00003fb9  [ 00001fdc ] 00000003          *   --HOLE-- [fill = 20]
+                   00003fbc  [ 00001fde ] 00000082          *                : mcbsp_start.obj (.text:MCBSP_start)
+                   0000403e  [ 0000201f ] 0000007d          *   rts55x.lib : ltoa.obj (.text)
+                   000040bb  [ 0000205d+] 00000076          *              : frcmpyd.obj (.text)
+                   00004131  [ 00002098+] 00000073          *              : frcmpyd_div.obj (.text)
+                   000041a4  [ 000020d2 ] 00000072          *   csl5502x.lib : i2c_cfg.obj (.text:I2C_config)
+                   00004216  [ 0000210b ] 00000072          *   rts55x.lib : remul.obj (.text)
+                   00004288  [ 00002144 ] 00000070          *              : sprintf.obj (.text)
+                   000042f8  [ 0000217c ] 0000006f          *   ezdsp5502bsl.lib : ezdsp5502.obj (.text)
+                   00004367  [ 000021b3+] 0000006f          *   rts55x.lib : fixdli.obj (.text)
+                   000043d6  [ 000021eb ] 0000006d          *   ezdsp5502bsl.lib : ezdsp5502_i2c.obj (.text)
+                   00004443  [ 00002221 ] 00000001          *   --HOLE-- [fill = 20]
+                   00004444  [ 00002222 ] 00000068          *   csl5502x.lib : irq_enab.obj (.text:IRQ_enable)
+                   000044ac  [ 00002256 ] 00000067          *   rts55x.lib : fltlid.obj (.text)
+                   00004513  [ 00002289+] 0000005c          *              : atoi.obj (.text)
+                   0000456f  [ 000022b7 ] 00000001          *   --HOLE-- [fill = 20]
+                   00004570  [ 000022b8 ] 0000004f          *   csl5502x.lib : gpio_open.obj (.text:GPIO_open)
+                   000045bf  [ 000022df+] 0000004d          *   rts55x.lib : autoinit.obj (.text)
+                   0000460c  [ 00002306 ] 0000004b          *              : args_main.obj (.text)
+                   00004657  [ 0000232b+] 0000004b          *              : remli.obj (.text)
+                   000046a2  [ 00002351 ] 00000048          *              : divli.obj (.text)
+                   000046ea  [ 00002375 ] 0000003f          *              : memcpy.obj (.text)
+                   00004729  [ 00002394+] 0000003e          *              : exit.obj (.text)
+                   00004767  [ 000023b3 ] 00000001          *   --HOLE-- [fill = 20]
+                   00004768  [ 000023b4 ] 00000037          *   csl5502x.lib : irq_clear.obj (.text:IRQ_clear)
+                   0000479f  [ 000023cf ] 00000001          *   --HOLE-- [fill = 20]
+                   000047a0  [ 000023d0 ] 00000037          *                : irq_setvecs.obj (.text:IRQ_setVecs)
+                   000047d7  [ 000023eb ] 00000001          *   --HOLE-- [fill = 20]
+                   000047d8  [ 000023ec ] 00000036          *                : mcbsp_cls.obj (.text:MCBSP_close)
+                   0000480e  [ 00002407 ] 00000034          *   rts55x.lib : boot.obj (.text)
+                   00004842  [ 00002421 ] 0000002a          *              : fixdi.obj (.text)
+                   0000486c  [ 00002436 ] 0000002a          *              : udiv.obj (.text)
+                   00004896  [ 0000244b ] 00000028          *   dma.obj (.text:retain)
+                   000048be  [ 0000245f ] 00000023          *   rts55x.lib : memccpy.obj (.text)
+                   000048e1  [ 00002470 ] 00000003          *   --HOLE-- [fill = 20]
+                   000048e4  [ 00002472 ] 0000001f          *   csl5502x.lib : gpio_dir.obj (.text:GPIO_pinDirection)
+                   00004903  [ 00002481 ] 00000001          *   --HOLE-- [fill = 20]
+                   00004904  [ 00002482 ] 0000001f          *                : gpio_write.obj (.text:GPIO_pinWrite)
+                   00004923  [ 00002491+] 0000001a          *   rts55x.lib : isinf.obj (.text)
+                   0000493d  [ 0000249e ] 00000003          *   --HOLE-- [fill = 20]
+                   00004940  [ 000024a0 ] 00000014          *   csl5502x.lib : gpio_read.obj (.text:GPIO_pinRead)
+                   00004954  [ 000024aa ] 00000014          *   rts55x.lib : subd.obj (.text)
+                   00004968  [ 000024b4 ] 00000013          *   csl5502x.lib : gpio_enab.obj (.text:GPIO_pinEnable)
+                   0000497b  [ 000024bd+] 00000013          *   rts55x.lib : lmpy.obj (.text)
+                   0000498e  [ 000024c7 ] 00000012          *              : _lock.obj (.text)
+                   000049a0  [ 000024d0 ] 00000011          *              : strlen.obj (.text)
+                   000049b1  [ 000024d8+] 00000010          *              : negd.obj (.text)
+                   000049c1  [ 000024e0 ] 00000003          *   --HOLE-- [fill = 20]
+                   000049c4  [ 000024e2 ] 0000000f          *   csl5502x.lib : irq_gdisab.obj (.text:IRQ_globalDisable)
+                   000049d3  [ 000024e9 ] 00000001          *   --HOLE-- [fill = 20]
+                   000049d4  [ 000024ea ] 0000000f          *                : irq_genab.obj (.text:IRQ_globalEnable)
+                   000049e3  [ 000024f1 ] 00000001          *   --HOLE-- [fill = 20]
+                   000049e4  [ 000024f2 ] 0000000d          *                : _csl_init.obj (.text:_CSL_init)
+                   000049f1  [ 000024f8 ] 00000003          *   --HOLE-- [fill = 20]
+                   000049f4  [ 000024fa ] 0000000c          *                : csl.obj (.text:CSL_init)
+                   00004a00  [ 00002500 ] 0000000c          *                : irq_grest.obj (.text:IRQ_globalRestore)
+                   00004a0c  [ 00002506 ] 00000007          *   rts55x.lib : exit.obj (.text:CIO_breakpoint)
+                   00004a13  [ 00002509 ] 00000001          *   --HOLE-- [fill = 20]
+                   00004a14  [ 0000250a ] 00000007          *   csl5502x.lib : mcbsp_r16.obj (.text:MCBSP_read16)
+                   00004a1b  [ 0000250d ] 00000001          *   --HOLE-- [fill = 20]
+                   00004a1c  [ 0000250e ] 00000007          *                : mcbsp_w16.obj (.text:MCBSP_write16)
+                   00004a23  [ 00002511 ] 00000001          *   --HOLE-- [fill = 20]
+                   00004a24  [ 00002512 ] 00000002          *                : csl.obj (.text)
+                   00004a26  [ 00002513 ] 00000002          *   --HOLE-- [fill = 20]
+
+.data        0   [ 00000300 ]  00000180          *   00000000   
+
+.pinit       0   [ 00000300 ]  00000180          *   00000000   
+
+.stack       0   [ 00004a40 ]  00002520          *   00001000   
+                 [ 00004a40 ]  00002520          *   00001000   --HOLE-- [fill = 00]
 
 .sysstack 
-*            0   [ 000020c0 ]  00001060          *   00000800   UNINITIALIZED
-                 [ 000020c0 ]  00001060          *   00000800   --HOLE--
+*            0   [ 00006a40 ]  00003520          *   00000800   
+                 [ 00006a40 ]  00003520          *   00000800   --HOLE-- [fill = 00]
 
-.const       0   [ 000030c0 ]  00001860          *   000002c6   
-                 [ 000030c0 ]  00001860          *   00000101   rts55x.lib : ctype.obj (.const:__ctypes_)
-                 [ 000032c2 ]  00001961          *   000000c8   oled.obj (.const:_glyphs)
-                 [ 00003452 ]  00001a29          *   00000001   --HOLE-- [fill = 0]
-                 [ 00003454 ]  00001a2a          *   0000009c   state_machine.obj (.const:.string)
-                 [ 0000358c ]  00001ac6          *   00000024   rts55x.lib : _printfi.obj (.const:.string)
-                 [ 000035d4 ]  00001aea          *   0000001b   ezdsp5502bsl.lib : ezdsp5502_mcbsp.obj (.const:_$P$T0$1)
-                 [ 0000360a ]  00001b05          *   00000001   --HOLE-- [fill = 0]
-                 [ 0000360c ]  00001b06          *   0000000c   rts55x.lib : _printfi.obj (.const)
-                 [ 00003624 ]  00001b12          *   0000000a   ezdsp5502bsl.lib : ezdsp5502_i2c.obj (.const:_$P$T0$1)
-                 [ 00003638 ]  00001b1c          *   00000008   rts55x.lib : divd.obj (.const:_initial_approx$1)
-                 [ 00003648 ]  00001b24          *   00000002              : fltlid.obj (.const)
+dmaMem       0   [ 00007a40 ]  00003d20          *   00000400   
+                 [ 00007a40 ]  00003d20          *   00000400   main.obj (dmaMem) [fill = 00]
 
-.cinit       0   [ 0000364c ]  00001b26          *   00000183   
-                 [ 0000364c ]  00001b26          *   00000081   csl5502x.lib : csl_dmadat.obj (.cinit)
-                 [ 0000374e ]  00001ba7          *   00000069                : csl_mcbspdat.obj (.cinit)
-                 [ 00003820 ]  00001c10          *   00000028   dma.obj (.cinit)
-                 [ 00003870 ]  00001c38          *   00000025   csl5502x.lib : csl_csldat.obj (.cinit)
-                 [ 000038ba ]  00001c5d          *   00000023                : csl_gpiodat.obj (.cinit)
-                 [ 00003900 ]  00001c80          *   0000000c   state_machine.obj (.cinit)
-                 [ 00003918 ]  00001c8c          *   0000000a   rts55x.lib : _lock.obj (.cinit)
-                 [ 0000392c ]  00001c96          *   0000000a              : exit.obj (.cinit)
-                 [ 00003940 ]  00001ca0          *   00000008   buttons.obj (.cinit)
-                 [ 00003950 ]  00001ca8          *   00000001   --HOLE-- [fill = 0]
+.const       0   [ 00008240 ]  00004120          *   000002c4   
+                 [ 00008240 ]  00004120          *   00000101   rts55x.lib : ctype.obj (.const:__ctypes_)
+                 [ 00008442 ]  00004221          *   000000c8   oled.obj (.const:_glyphs)
+                 [ 000085d2 ]  000042e9          *   00000001   --HOLE-- [fill = 00]
+                 [ 000085d4 ]  000042ea          *   0000009a   state_machine.obj (.const:.string)
+                 [ 00008708 ]  00004384          *   00000024   rts55x.lib : _printfi.obj (.const:.string)
+                 [ 00008750 ]  000043a8          *   0000001b   ezdsp5502bsl.lib : ezdsp5502_mcbsp.obj (.const:_$P$T0$1)
+                 [ 00008786 ]  000043c3          *   00000001   --HOLE-- [fill = 00]
+                 [ 00008788 ]  000043c4          *   0000000c   rts55x.lib : _printfi.obj (.const)
+                 [ 000087a0 ]  000043d0          *   0000000a   ezdsp5502bsl.lib : ezdsp5502_i2c.obj (.const:_$P$T0$1)
+                 [ 000087b4 ]  000043da          *   00000008   rts55x.lib : divd.obj (.const:_initial_approx$1)
+                 [ 000087c4 ]  000043e2          *   00000002              : fltlid.obj (.const)
 
-.csldata     0   [ 00003954 ]  00001caa          *   00000126   UNINITIALIZED
-                 [ 00003954 ]  00001caa          *   0000007e   csl5502x.lib : csl_dmadat.obj (.csldata:DMA_data)
-                 [ 00003a50 ]  00001d28          *   00000066                : csl_mcbspdat.obj (.csldata:MCBSP_data)
-                 [ 00003b1c ]  00001d8e          *   00000022                : csl_csldat.obj (.csldata:SYS_data)
-                 [ 00003b60 ]  00001db0          *   00000020                : csl_gpiodat.obj (.csldata:GPIO_data)
+.cinit       0   [ 000087c8 ]  000043e4          *   0000018b   
+                 [ 000087c8 ]  000043e4          *   00000081   csl5502x.lib : csl_dmadat.obj (.cinit)
+                 [ 000088ca ]  00004465          *   00000069                : csl_mcbspdat.obj (.cinit)
+                 [ 0000899c ]  000044ce          *   00000030   dma.obj (.cinit)
+                 [ 000089fc ]  000044fe          *   00000025   csl5502x.lib : csl_csldat.obj (.cinit)
+                 [ 00008a46 ]  00004523          *   00000023                : csl_gpiodat.obj (.cinit)
+                 [ 00008a8c ]  00004546          *   0000000c   state_machine.obj (.cinit)
+                 [ 00008aa4 ]  00004552          *   0000000a   rts55x.lib : _lock.obj (.cinit)
+                 [ 00008ab8 ]  0000455c          *   0000000a              : exit.obj (.cinit)
+                 [ 00008acc ]  00004566          *   00000008   buttons.obj (.cinit)
+                 [ 00008adc ]  0000456e          *   00000001   --HOLE-- [fill = 0]
 
-dmaMem       0   [ 00003ba0 ]  00001dd0          *   000000c0   UNINITIALIZED
-                 [ 00003ba0 ]  00001dd0          *   000000c0   main.obj (dmaMem)
+.csldata     0   [ 00008b00 ]  00004580          *   00000126   
+                 [ 00008b00 ]  00004580          *   0000007e   csl5502x.lib : csl_dmadat.obj (.csldata:DMA_data) [fill = 00]
+                 [ 00008bfc ]  000045fe          *   00000066                : csl_mcbspdat.obj (.csldata:MCBSP_data) [fill = 00]
+                 [ 00008cc8 ]  00004664          *   00000022                : csl_csldat.obj (.csldata:SYS_data) [fill = 00]
+                 [ 00008d0c ]  00004686          *   00000020                : csl_gpiodat.obj (.csldata:GPIO_data) [fill = 00]
 
-.bss         0   [ 00003d20 ]  00001e90          *   0000004a   UNINITIALIZED
-                 [ 00003d20 ]  00001e90          *   00000028   dma.obj (.bss)
-                 [ 00003d70 ]  00001eb8          *   0000000d   state_machine.obj (.bss)
-                 [ 00003d8a ]  00001ec5          *   00000001   --HOLE--
-                 [ 00003d8c ]  00001ec6          *   00000008   ezdsp5502bsl.lib : ezdsp5502_gpio.obj (.bss)
-                 [ 00003d9c ]  00001ece          *   00000004   rts55x.lib : _lock.obj (.bss)
-                 [ 00003da4 ]  00001ed2          *   00000004              : exit.obj (.bss)
-                 [ 00003dac ]  00001ed6          *   00000002   buttons.obj (.bss)
-                 [ 00003db0 ]  00001ed8          *   00000002   ezdsp5502bsl.lib : ezdsp5502_mcbsp.obj (.bss)
+.bss         0   [ 00008d60 ]  000046b0          *   00000050   
+                 [ 00008d60 ]  000046b0          *   0000002e   dma.obj (.bss) [fill = 00]
+                 [ 00008dbc ]  000046de          *   0000000d   state_machine.obj (.bss) [fill = 00]
+                 [ 00008dd6 ]  000046eb          *   00000001   --HOLE-- [fill = 00]
+                 [ 00008dd8 ]  000046ec          *   00000008   ezdsp5502bsl.lib : ezdsp5502_gpio.obj (.bss) [fill = 00]
+                 [ 00008de8 ]  000046f4          *   00000004   rts55x.lib : _lock.obj (.bss) [fill = 00]
+                 [ 00008df0 ]  000046f8          *   00000004              : exit.obj (.bss) [fill = 00]
+                 [ 00008df8 ]  000046fc          *   00000002   buttons.obj (.bss) [fill = 00]
+                 [ 00008dfc ]  000046fe          *   00000002   ezdsp5502bsl.lib : ezdsp5502_mcbsp.obj (.bss) [fill = 00]
 
-vectors      0     00003db8  [ 00001edc ] 00000100          *   NOLOAD SECTION
-                   00003db8  [ 00001edc ] 00000100          *   rts55x.lib : vectors.obj (vectors)
-
-.text        0     00030000  [ 00018000 ] 000044e0          *   
-                   00030000  [ 00018000 ] 000015a4          *   rts55x.lib : _printfi.obj (.text)
-                   000315a4  [ 00018ad2 ] 000003cc          *              : divd.obj (.text)
-                   00031970  [ 00018cb8 ] 00000284          *   state_machine.obj (.text)
-                   00031bf4  [ 00018dfa ] 00000261          *   csl5502x.lib : mcbsp_rst.obj (.text:MCBSP_reset)
-                   00031e55  [ 00018f2a+] 0000025e          *   rts55x.lib : llmpy.obj (.text)
-                   000320b3  [ 00019059+] 0000025a          *              : addd.obj (.text)
-                   0003230d  [ 00019186+] 0000021a          *   aic3204.obj (.text)
-                   00032527  [ 00019293+] 0000020c          *   ezdsp5502bsl.lib : ezdsp5502_gpio.obj (.text)
-                   00032733  [ 00019399+] 000001ea          *   rts55x.lib : cmpd.obj (.text)
-                   0003291d  [ 0001948e+] 000001d1          *   oled.obj (.text)
-                   00032aee  [ 00019577 ] 00000002          *   rts55x.lib : vectors.obj (.text)
-                   00032af0  [ 00019578 ] 000001ca          *   csl5502x.lib : dma_reset.obj (.text:DMA_reset)
-                   00032cba  [ 0001965d ] 00000002          *   --HOLE-- [fill = 20]
-                   00032cbc  [ 0001965e ] 0000018e          *                : i2c_write.obj (.text:I2C_write)
-                   00032e4a  [ 00019725 ] 0000018b          *   lcd.obj (.text)
-                   00032fd5  [ 000197ea ] 00000003          *   --HOLE-- [fill = 20]
-                   00032fd8  [ 000197ec ] 0000015d          *   csl5502x.lib : i2c_read.obj (.text:I2C_read)
-                   00033135  [ 0001989a+] 0000014e          *   ezdsp5502bsl.lib : ezdsp5502_i2cgpio.obj (.text)
-                   00033283  [ 00019941+] 0000014c          *   rts55x.lib : mpyd.obj (.text)
-                   000333cf  [ 000199e7 ] 00000001          *   --HOLE-- [fill = 20]
-                   000333d0  [ 000199e8 ] 00000130          *   csl5502x.lib : mcbsp_cfg.obj (.text:MCBSP_config)
-                   00033500  [ 00019a80 ] 0000010e          *                : dma_cfg.obj (.text:DMA_config)
-                   0003360e  [ 00019b07 ] 0000010d          *   dma.obj (.text)
-                   0003371b  [ 00019b8d ] 00000001          *   --HOLE-- [fill = 20]
-                   0003371c  [ 00019b8e ] 000000ee          *   csl5502x.lib : mcbsp_open.obj (.text:MCBSP_open)
-                   0003380a  [ 00019c05 ] 00000002          *   --HOLE-- [fill = 20]
-                   0003380c  [ 00019c06 ] 000000cb          *                : dma_open.obj (.text:DMA_open)
-                   000338d7  [ 00019c6b+] 000000c3          *   main.obj (.text)
-                   0003399a  [ 00019ccd ] 000000ba          *   ezdsp5502bsl.lib : ezdsp5502_mcbsp.obj (.text)
-                   00033a54  [ 00019d2a ] 000000a1          *   rts55x.lib : divul.obj (.text)
-                   00033af5  [ 00019d7a+] 0000008e          *   buttons.obj (.text)
-                   00033b83  [ 00019dc1 ] 00000001          *   --HOLE-- [fill = 20]
-                   00033b84  [ 00019dc2 ] 00000082          *   csl5502x.lib : mcbsp_start.obj (.text:MCBSP_start)
-                   00033c06  [ 00019e03 ] 0000007d          *   rts55x.lib : ltoa.obj (.text)
-                   00033c83  [ 00019e41+] 00000076          *              : frcmpyd.obj (.text)
-                   00033cf9  [ 00019e7c+] 00000073          *              : frcmpyd_div.obj (.text)
-                   00033d6c  [ 00019eb6 ] 00000072          *   csl5502x.lib : i2c_cfg.obj (.text:I2C_config)
-                   00033dde  [ 00019eef ] 00000072          *   rts55x.lib : remul.obj (.text)
-                   00033e50  [ 00019f28 ] 00000070          *              : sprintf.obj (.text)
-                   00033ec0  [ 00019f60 ] 0000006f          *   ezdsp5502bsl.lib : ezdsp5502.obj (.text)
-                   00033f2f  [ 00019f97+] 0000006f          *   rts55x.lib : fixdli.obj (.text)
-                   00033f9e  [ 00019fcf ] 0000006d          *   ezdsp5502bsl.lib : ezdsp5502_i2c.obj (.text)
-                   0003400b  [ 0001a005+] 00000067          *   rts55x.lib : fltlid.obj (.text)
-                   00034072  [ 0001a039 ] 0000005c          *              : atoi.obj (.text)
-                   000340ce  [ 0001a067 ] 00000002          *   --HOLE-- [fill = 20]
-                   000340d0  [ 0001a068 ] 0000004f          *   csl5502x.lib : gpio_open.obj (.text:GPIO_open)
-                   0003411f  [ 0001a08f+] 0000004d          *   rts55x.lib : autoinit.obj (.text)
-                   0003416c  [ 0001a0b6 ] 0000004b          *              : args_main.obj (.text)
-                   000341b7  [ 0001a0db+] 0000004b          *              : remli.obj (.text)
-                   00034202  [ 0001a101 ] 00000048          *              : divli.obj (.text)
-                   0003424a  [ 0001a125 ] 0000003f          *              : memcpy.obj (.text)
-                   00034289  [ 0001a144+] 0000003e          *              : exit.obj (.text)
-                   000342c7  [ 0001a163 ] 00000001          *   --HOLE-- [fill = 20]
-                   000342c8  [ 0001a164 ] 00000036          *   csl5502x.lib : mcbsp_cls.obj (.text:MCBSP_close)
-                   000342fe  [ 0001a17f ] 00000034          *   rts55x.lib : boot.obj (.text)
-                   00034332  [ 0001a199 ] 0000002a          *              : fixdi.obj (.text)
-                   0003435c  [ 0001a1ae ] 0000002a          *              : udiv.obj (.text)
-                   00034386  [ 0001a1c3 ] 00000023          *              : memccpy.obj (.text)
-                   000343a9  [ 0001a1d4 ] 00000003          *   --HOLE-- [fill = 20]
-                   000343ac  [ 0001a1d6 ] 0000001f          *   csl5502x.lib : gpio_dir.obj (.text:GPIO_pinDirection)
-                   000343cb  [ 0001a1e5 ] 00000001          *   --HOLE-- [fill = 20]
-                   000343cc  [ 0001a1e6 ] 0000001f          *                : gpio_write.obj (.text:GPIO_pinWrite)
-                   000343eb  [ 0001a1f5+] 0000001a          *   rts55x.lib : isinf.obj (.text)
-                   00034405  [ 0001a202 ] 00000003          *   --HOLE-- [fill = 20]
-                   00034408  [ 0001a204 ] 00000014          *   csl5502x.lib : gpio_read.obj (.text:GPIO_pinRead)
-                   0003441c  [ 0001a20e ] 00000014          *   rts55x.lib : subd.obj (.text)
-                   00034430  [ 0001a218 ] 00000013          *   csl5502x.lib : gpio_enab.obj (.text:GPIO_pinEnable)
-                   00034443  [ 0001a221+] 00000013          *   rts55x.lib : lmpy.obj (.text)
-                   00034456  [ 0001a22b ] 00000012          *              : _lock.obj (.text)
-                   00034468  [ 0001a234 ] 00000011          *              : strlen.obj (.text)
-                   00034479  [ 0001a23c+] 00000010          *              : negd.obj (.text)
-                   00034489  [ 0001a244 ] 00000003          *   --HOLE-- [fill = 20]
-                   0003448c  [ 0001a246 ] 0000000f          *   csl5502x.lib : irq_gdisab.obj (.text:IRQ_globalDisable)
-                   0003449b  [ 0001a24d ] 00000001          *   --HOLE-- [fill = 20]
-                   0003449c  [ 0001a24e ] 0000000d          *                : _csl_init.obj (.text:_CSL_init)
-                   000344a9  [ 0001a254 ] 00000003          *   --HOLE-- [fill = 20]
-                   000344ac  [ 0001a256 ] 0000000c          *                : csl.obj (.text:CSL_init)
-                   000344b8  [ 0001a25c ] 0000000c          *                : irq_grest.obj (.text:IRQ_globalRestore)
-                   000344c4  [ 0001a262 ] 00000007          *   rts55x.lib : exit.obj (.text:CIO_breakpoint)
-                   000344cb  [ 0001a265 ] 00000001          *   --HOLE-- [fill = 20]
-                   000344cc  [ 0001a266 ] 00000007          *   csl5502x.lib : mcbsp_r16.obj (.text:MCBSP_read16)
-                   000344d3  [ 0001a269 ] 00000001          *   --HOLE-- [fill = 20]
-                   000344d4  [ 0001a26a ] 00000007          *                : mcbsp_w16.obj (.text:MCBSP_write16)
-                   000344db  [ 0001a26d ] 00000001          *   --HOLE-- [fill = 20]
-                   000344dc  [ 0001a26e ] 00000002          *                : csl.obj (.text)
-                   000344de  [ 0001a26f ] 00000002          *   --HOLE-- [fill = 20]
+.vectors     0     0000fe00  [ 00007f00 ] 00000100          *   
+                   0000fe00  [ 00007f00 ] 00000100          *   vectors_dma4.obj (.vectors)
 
 
 GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
@@ -185,167 +201,212 @@ byte addr   word addr   name
 00000002                $TI_capability$C5500$CallingConvention
 00000002                $TI_capability$C5500$MemoryModel
 00000001                $TI_capability_requires_rev2
-            00001e90    .bss
-            00000060    .data
-00030000                .text
-000344c5                C$$EXIT
-00034443                I$$LMPY
-0003435c                I$$UDIV
-00034371                I$$UMOD
-0003230d                _AIC3204_rset
-000344dc                _CSL5502_LIB_
-            00001caa    _CSL_DmaData
-            00001db0    _CSL_GpioData
-            00001d28    _CSL_McbspData
-            00001d8e    _CSL_SysData
-000344ac                _CSL_init
-00033500                _DMA_config
-0003380c                _DMA_open
-00032af0                _DMA_reset
-000326b8                _EZDSP5502_GPIO_getInput
-00032527                _EZDSP5502_GPIO_init
-000325be                _EZDSP5502_GPIO_setDirection
-0003263b                _EZDSP5502_GPIO_setOutput
-00033135                _EZDSP5502_I2CGPIO_configLine
-0003320c                _EZDSP5502_I2CGPIO_read
-00033188                _EZDSP5502_I2CGPIO_readLine
-00033259                _EZDSP5502_I2CGPIO_write
-000331b9                _EZDSP5502_I2CGPIO_writeLine
-00033f9e                _EZDSP5502_I2C_init
-00033fe7                _EZDSP5502_I2C_read
-00033fbb                _EZDSP5502_I2C_reset
-00033fc5                _EZDSP5502_I2C_write
-000339de                _EZDSP5502_MCBSP_close
-0003399a                _EZDSP5502_MCBSP_init
-00033a20                _EZDSP5502_MCBSP_read
-000339f0                _EZDSP5502_MCBSP_write
-00033f16                _EZDSP5502_init
-00033ed0                _EZDSP5502_wait
-00033f04                _EZDSP5502_waitusec
-000340d0                _GPIO_open
-000343ac                _GPIO_pinDirection
-00034430                _GPIO_pinEnable
-00034408                _GPIO_pinRead
-000343cc                _GPIO_pinWrite
-00033d6c                _I2C_config
-00032fd8                _I2C_read
-00032cbc                _I2C_write
-0003448c                _IRQ_globalDisable
-000344b8                _IRQ_globalRestore
-00032337                _Init_AIC3204
-000342c8                _MCBSP_close
-000333d0                _MCBSP_config
-0003371c                _MCBSP_open
-000344cc                _MCBSP_read16
-00031bf4                _MCBSP_reset
-00033b84                _MCBSP_start
-000344d4                _MCBSP_write16
-00003db8                _Reset
-0003449c                __CSL_init
-            00001060    __STACK_END
+            000046b0    .bss
+            00000180    .data
+00000300                .text
+00004a0d                C$$EXIT
+0000497b                I$$LMPY
+0000486c                I$$UDIV
+00004881                I$$UMOD
+0000260d                _AIC3204_rset
+00004a24                _CSL5502_LIB_
+            00004580    _CSL_DmaData
+            00004686    _CSL_GpioData
+            000045fe    _CSL_McbspData
+            00004664    _CSL_SysData
+000049f4                _CSL_init
+000039b0                _DMA_config
+00003c7c                _DMA_open
+00002df0                _DMA_reset
+000029b8                _EZDSP5502_GPIO_getInput
+00002827                _EZDSP5502_GPIO_init
+000028be                _EZDSP5502_GPIO_setDirection
+0000293b                _EZDSP5502_GPIO_setOutput
+000035e5                _EZDSP5502_I2CGPIO_configLine
+000036bc                _EZDSP5502_I2CGPIO_read
+00003638                _EZDSP5502_I2CGPIO_readLine
+00003709                _EZDSP5502_I2CGPIO_write
+00003669                _EZDSP5502_I2CGPIO_writeLine
+000043d6                _EZDSP5502_I2C_init
+0000441f                _EZDSP5502_I2C_read
+000043f3                _EZDSP5502_I2C_reset
+000043fd                _EZDSP5502_I2C_write
+00003d8b                _EZDSP5502_MCBSP_close
+00003d47                _EZDSP5502_MCBSP_init
+00003dcd                _EZDSP5502_MCBSP_read
+00003d9d                _EZDSP5502_MCBSP_write
+0000434e                _EZDSP5502_init
+00004308                _EZDSP5502_wait
+0000433c                _EZDSP5502_waitusec
+00004570                _GPIO_open
+000048e4                _GPIO_pinDirection
+00004968                _GPIO_pinEnable
+00004940                _GPIO_pinRead
+00004904                _GPIO_pinWrite
+000041a4                _I2C_config
+00003488                _I2C_read
+0000316c                _I2C_write
+00004768                _IRQ_clear
+00004444                _IRQ_enable
+000049c4                _IRQ_globalDisable
+000049d4                _IRQ_globalEnable
+00004a00                _IRQ_globalRestore
+00003f30                _IRQ_plug
+000047a0                _IRQ_setVecs
+00002637                _Init_AIC3204
+000047d8                _MCBSP_close
+00003880                _MCBSP_config
+00003ac0                _MCBSP_open
+00004a14                _MCBSP_read16
+00001ef4                _MCBSP_reset
+00003fbc                _MCBSP_start
+00004a1c                _MCBSP_write16
+000000c0                _Reset
+0000fe00                _VECSTART
+000049e4                __CSL_init
+            00003520    __STACK_END
 00002000                __STACK_SIZE
 00001000                __SYSSTACK_SIZE
 00000001                __TI_args_main
 ffffffff                ___binit__
-            00001e90    ___bss__
+            000046b0    ___bss__
 ffffffff                ___c_args__
-            00001b26    ___cinit__
-            00000060    ___data__
-            00000060    ___edata__
-            00001eda    ___end__
-000344e0                ___etext__
-000343eb                ___isinf
+            000043e4    ___cinit__
+            00000180    ___data__
+            00000180    ___edata__
+            00004700    ___end__
+00004a28                ___etext__
+00004923                ___isinf
 ffffffff                ___pinit__
-00030000                ___text__
-000320b3                __addd
-0003416c                __args_main
-            00001ed2    __cleanup_ptr
-000328c5                __cmpd
-            00001860    __ctypes_
-000315a4                __divd
-00034202                __divli
-0003207e                __divlli
-0003435c                __divu
-00033a54                __divul
-00031f8a                __divull
-            00001ed4    __dtors_ptr
-00032891                __eqld
-00034332                __fixdi
-00033f2f                __fixdli
-0003400b                __fltlid
-00033c83                __frcmpyd
-00033cf9                __frcmpyd_div
-00032847                __geqd
-000327fc                __gtrd
-000327af                __leqd
-            00001ece    __lock
-00032767                __lssd
-00033283                __mpyd
-00034443                __mpyli
-00031ed2                __mpylli
-00034479                __negd
-00032733                __neqd
-00034466                __nop
-00031362                __printfi
-0003445e                __register_lock
-00034456                __register_unlock
-000341b7                __remli
-00031ea3                __remlli
-00034371                __remu
-00033dde                __remul
-00031e55                __remull
-            00000060    __stack
-0003441c                __subd
-            00001060    __sysstack
-            00001ed0    __unlock
-000344c4                _abort
-            00001ed8    _aicMcbsp
-00034072                _atoi
-0003411f                _auto_init
-            00001dd0    _buffReceive
-            00001e30    _buffTransmit
-000342fe                _c_int00
-00033b4b                _changeButtonState
-00033b0b                _checkButtons
-00033689                _configAudioDma
-            00001e90    _dmaReceive
-            00001e92    _dmaTransmit
-0003395f                _dsp_process
-00034289                _exit
-00033b69                _getButtonState
-000329bc                _getGlyphForChar
-            00001ec6    _hGPIO_group0
-            00001ec8    _hGPIO_group1
-            00001eca    _hGPIO_group2
-            00001ecc    _hGPIO_group3
-00033af5                _initI2CButtons
-00033c06                _ltoa
-000338d7                _main
-00034386                _memccpy
-0003424a                _memcpy
-            00001ebb    _message
-            00001e94    _myconfig_receive
-            00001ea6    _myconfig_transmit
-0003298f                _oled_addSpace
-00032959                _oled_fillPage
-00032933                _oled_setPage
-0003291d                _oled_start
-00032a1d                _oled_writeText
-00032e4a                _osd9616_init
-00032f4a                _osd9616_multiSend
-00032f2a                _osd9616_send
-00032f98                _printLetter
-00033e50                _sprintf
-000336eb                _startAudioDma
-00031a98                _stateMachineInit
-00031ac5                _stateMachineRun
-00033703                _stopAudioDma
-00034468                _strlen
+00000300                ___text__
+000023b3                __addd
+0000460c                __args_main
+            000046f8    __cleanup_ptr
+00002bc5                __cmpd
+            00004120    __ctypes_
+000018a4                __divd
+000046a2                __divli
+0000237e                __divlli
+0000486c                __divu
+00003e01                __divul
+0000228a                __divull
+            000046fa    __dtors_ptr
+00002b91                __eqld
+00004842                __fixdi
+00004367                __fixdli
+000044ac                __fltlid
+000040bb                __frcmpyd
+00004131                __frcmpyd_div
+00002b47                __geqd
+00002afc                __gtrd
+00002aaf                __leqd
+            000046f4    __lock
+00002a67                __lssd
+00003733                __mpyd
+0000497b                __mpyli
+000021d2                __mpylli
+000049b1                __negd
+00002a33                __neqd
+0000499e                __nop
+00001662                __printfi
+00004996                __register_lock
+0000498e                __register_unlock
+00004657                __remli
+000021a3                __remlli
+00004881                __remu
+00004216                __remul
+00002155                __remull
+            00002520    __stack
+00004954                __subd
+            00003520    __sysstack
+            000046f6    __unlock
+00004a0c                _abort
+            000046fe    _aicMcbsp
+00004513                _atoi
+000045bf                _auto_init
+            00003d20    _buffReceive
+            00003f20    _buffTransmit
+0000480e                _c_int00
+00003ef8                _changeButtonState
+00003eb8                _checkButtons
+00003045                _configAudioDma
+00004896                _dmaRcvIsr
+            000046b6    _dmaReceive
+            000046b8    _dmaTransmit
+00003c41                _dsp_process
+00004729                _exit
+00003f16                _getButtonState
+00002cbc                _getGlyphForChar
+00003162                _getSinal
+            000046ec    _hGPIO_group0
+            000046ee    _hGPIO_group1
+            000046f0    _hGPIO_group2
+            000046f2    _hGPIO_group3
+00003ea2                _initI2CButtons
+0000403e                _ltoa
+00003bae                _main
+000048be                _memccpy
+000046ea                _memcpy
+            000046e1    _message
+            000046ba    _myconfig_receive
+            000046cc    _myconfig_transmit
+            000046b4    _old_intm
+00002c8f                _oled_addSpace
+00002c59                _oled_fillPage
+00002c33                _oled_setPage
+00002c1d                _oled_start
+00002d1d                _oled_writeText
+000032fa                _osd9616_init
+000033fa                _osd9616_multiSend
+000033da                _osd9616_send
+00003448                _printLetter
+            000046b3    _rcvEventId
+0000315a                _resetSinal
+00004288                _sprintf
+00003121                _startAudioDma
+00001d98                _stateMachineInit
+00001dc5                _stateMachineRun
+00003142                _stopAudioDma
+000049a0                _strlen
+            000046b1    _teste
+            000046b2    _xmtEventId
 ffffffff                binit
-            00001b26    cinit
-            00000060    edata
-            00001eda    end
-000344e0                etext
+            000043e4    cinit
+            00000180    edata
+            00004700    end
+00004a28                etext
+0000fe10                int0
+0000fe18                int1
+0000fe60                int10
+0000fe68                int11
+0000fe70                int12
+0000fe78                int13
+0000fe80                int14
+0000fe88                int15
+0000fe90                int16
+0000fe98                int17
+0000fea0                int18
+0000fea8                int19
+0000fe20                int2
+0000feb0                int20
+0000feb8                int21
+0000fec0                int22
+0000fec8                int23
+0000fed0                int24
+0000fed8                int25
+0000fee0                int26
+0000fee8                int27
+0000fef0                int28
+0000fef8                int29
+0000fe28                int3
+0000fe30                int4
+0000fe38                int5
+0000fe40                int6
+0000fe48                int7
+0000fe50                int8
+0000fe58                int9
+0000fe08                nmi
+00003169                no_isr
 ffffffff                pinit
 
 
@@ -358,166 +419,211 @@ byte addr   word addr   name
 00000001                __TI_args_main
 00000002                $TI_capability$C5500$CallingConvention
 00000002                $TI_capability$C5500$MemoryModel
-            00000060    .data
-            00000060    ___data__
-            00000060    ___edata__
-            00000060    __stack
-            00000060    edata
+000000c0                _Reset
+            00000180    .data
+00000300                .text
+            00000180    ___data__
+            00000180    ___edata__
+00000300                ___text__
+            00000180    edata
 00001000                __SYSSTACK_SIZE
+00001662                __printfi
+000018a4                __divd
+00001d98                _stateMachineInit
+00001dc5                _stateMachineRun
+00001ef4                _MCBSP_reset
 00002000                __STACK_SIZE
-            00001060    __STACK_END
-            00001060    __sysstack
-            00001860    __ctypes_
-            00001b26    ___cinit__
-            00001b26    cinit
-            00001caa    _CSL_DmaData
-            00001d28    _CSL_McbspData
-            00001d8e    _CSL_SysData
-            00001db0    _CSL_GpioData
-            00001dd0    _buffReceive
-            00001e30    _buffTransmit
-            00001e90    .bss
-            00001e90    ___bss__
-            00001e90    _dmaReceive
-            00001e92    _dmaTransmit
-            00001e94    _myconfig_receive
-            00001ea6    _myconfig_transmit
-            00001ebb    _message
-            00001ec6    _hGPIO_group0
-            00001ec8    _hGPIO_group1
-            00001eca    _hGPIO_group2
-            00001ecc    _hGPIO_group3
-            00001ece    __lock
-            00001ed0    __unlock
-            00001ed2    __cleanup_ptr
-            00001ed4    __dtors_ptr
-            00001ed8    _aicMcbsp
-            00001eda    ___end__
-            00001eda    end
-00003db8                _Reset
-00030000                .text
-00030000                ___text__
-00031362                __printfi
-000315a4                __divd
-00031a98                _stateMachineInit
-00031ac5                _stateMachineRun
-00031bf4                _MCBSP_reset
-00031e55                __remull
-00031ea3                __remlli
-00031ed2                __mpylli
-00031f8a                __divull
-0003207e                __divlli
-000320b3                __addd
-0003230d                _AIC3204_rset
-00032337                _Init_AIC3204
-00032527                _EZDSP5502_GPIO_init
-000325be                _EZDSP5502_GPIO_setDirection
-0003263b                _EZDSP5502_GPIO_setOutput
-000326b8                _EZDSP5502_GPIO_getInput
-00032733                __neqd
-00032767                __lssd
-000327af                __leqd
-000327fc                __gtrd
-00032847                __geqd
-00032891                __eqld
-000328c5                __cmpd
-0003291d                _oled_start
-00032933                _oled_setPage
-00032959                _oled_fillPage
-0003298f                _oled_addSpace
-000329bc                _getGlyphForChar
-00032a1d                _oled_writeText
-00032af0                _DMA_reset
-00032cbc                _I2C_write
-00032e4a                _osd9616_init
-00032f2a                _osd9616_send
-00032f4a                _osd9616_multiSend
-00032f98                _printLetter
-00032fd8                _I2C_read
-00033135                _EZDSP5502_I2CGPIO_configLine
-00033188                _EZDSP5502_I2CGPIO_readLine
-000331b9                _EZDSP5502_I2CGPIO_writeLine
-0003320c                _EZDSP5502_I2CGPIO_read
-00033259                _EZDSP5502_I2CGPIO_write
-00033283                __mpyd
-000333d0                _MCBSP_config
-00033500                _DMA_config
-00033689                _configAudioDma
-000336eb                _startAudioDma
-00033703                _stopAudioDma
-0003371c                _MCBSP_open
-0003380c                _DMA_open
-000338d7                _main
-0003395f                _dsp_process
-0003399a                _EZDSP5502_MCBSP_init
-000339de                _EZDSP5502_MCBSP_close
-000339f0                _EZDSP5502_MCBSP_write
-00033a20                _EZDSP5502_MCBSP_read
-00033a54                __divul
-00033af5                _initI2CButtons
-00033b0b                _checkButtons
-00033b4b                _changeButtonState
-00033b69                _getButtonState
-00033b84                _MCBSP_start
-00033c06                _ltoa
-00033c83                __frcmpyd
-00033cf9                __frcmpyd_div
-00033d6c                _I2C_config
-00033dde                __remul
-00033e50                _sprintf
-00033ed0                _EZDSP5502_wait
-00033f04                _EZDSP5502_waitusec
-00033f16                _EZDSP5502_init
-00033f2f                __fixdli
-00033f9e                _EZDSP5502_I2C_init
-00033fbb                _EZDSP5502_I2C_reset
-00033fc5                _EZDSP5502_I2C_write
-00033fe7                _EZDSP5502_I2C_read
-0003400b                __fltlid
-00034072                _atoi
-000340d0                _GPIO_open
-0003411f                _auto_init
-0003416c                __args_main
-000341b7                __remli
-00034202                __divli
-0003424a                _memcpy
-00034289                _exit
-000342c8                _MCBSP_close
-000342fe                _c_int00
-00034332                __fixdi
-0003435c                I$$UDIV
-0003435c                __divu
-00034371                I$$UMOD
-00034371                __remu
-00034386                _memccpy
-000343ac                _GPIO_pinDirection
-000343cc                _GPIO_pinWrite
-000343eb                ___isinf
-00034408                _GPIO_pinRead
-0003441c                __subd
-00034430                _GPIO_pinEnable
-00034443                I$$LMPY
-00034443                __mpyli
-00034456                __register_unlock
-0003445e                __register_lock
-00034466                __nop
-00034468                _strlen
-00034479                __negd
-0003448c                _IRQ_globalDisable
-0003449c                __CSL_init
-000344ac                _CSL_init
-000344b8                _IRQ_globalRestore
-000344c4                _abort
-000344c5                C$$EXIT
-000344cc                _MCBSP_read16
-000344d4                _MCBSP_write16
-000344dc                _CSL5502_LIB_
-000344e0                ___etext__
-000344e0                etext
+00002155                __remull
+000021a3                __remlli
+000021d2                __mpylli
+0000228a                __divull
+0000237e                __divlli
+000023b3                __addd
+0000260d                _AIC3204_rset
+00002637                _Init_AIC3204
+00002827                _EZDSP5502_GPIO_init
+000028be                _EZDSP5502_GPIO_setDirection
+0000293b                _EZDSP5502_GPIO_setOutput
+000029b8                _EZDSP5502_GPIO_getInput
+00002a33                __neqd
+00002a67                __lssd
+00002aaf                __leqd
+00002afc                __gtrd
+00002b47                __geqd
+00002b91                __eqld
+00002bc5                __cmpd
+00002c1d                _oled_start
+00002c33                _oled_setPage
+00002c59                _oled_fillPage
+00002c8f                _oled_addSpace
+00002cbc                _getGlyphForChar
+00002d1d                _oled_writeText
+00002df0                _DMA_reset
+00003045                _configAudioDma
+00003121                _startAudioDma
+00003142                _stopAudioDma
+0000315a                _resetSinal
+00003162                _getSinal
+00003169                no_isr
+0000316c                _I2C_write
+000032fa                _osd9616_init
+000033da                _osd9616_send
+000033fa                _osd9616_multiSend
+00003448                _printLetter
+00003488                _I2C_read
+000035e5                _EZDSP5502_I2CGPIO_configLine
+00003638                _EZDSP5502_I2CGPIO_readLine
+00003669                _EZDSP5502_I2CGPIO_writeLine
+000036bc                _EZDSP5502_I2CGPIO_read
+00003709                _EZDSP5502_I2CGPIO_write
+00003733                __mpyd
+00003880                _MCBSP_config
+000039b0                _DMA_config
+00003ac0                _MCBSP_open
+00003bae                _main
+00003c41                _dsp_process
+00003c7c                _DMA_open
+00003d47                _EZDSP5502_MCBSP_init
+00003d8b                _EZDSP5502_MCBSP_close
+00003d9d                _EZDSP5502_MCBSP_write
+00003dcd                _EZDSP5502_MCBSP_read
+00003e01                __divul
+00003ea2                _initI2CButtons
+00003eb8                _checkButtons
+00003ef8                _changeButtonState
+00003f16                _getButtonState
+00003f30                _IRQ_plug
+00003fbc                _MCBSP_start
+0000403e                _ltoa
+000040bb                __frcmpyd
+00004131                __frcmpyd_div
+000041a4                _I2C_config
+00004216                __remul
+00004288                _sprintf
+00004308                _EZDSP5502_wait
+0000433c                _EZDSP5502_waitusec
+0000434e                _EZDSP5502_init
+00004367                __fixdli
+000043d6                _EZDSP5502_I2C_init
+000043f3                _EZDSP5502_I2C_reset
+000043fd                _EZDSP5502_I2C_write
+0000441f                _EZDSP5502_I2C_read
+00004444                _IRQ_enable
+000044ac                __fltlid
+00004513                _atoi
+00004570                _GPIO_open
+000045bf                _auto_init
+0000460c                __args_main
+00004657                __remli
+000046a2                __divli
+000046ea                _memcpy
+00004729                _exit
+00004768                _IRQ_clear
+000047a0                _IRQ_setVecs
+000047d8                _MCBSP_close
+0000480e                _c_int00
+00004842                __fixdi
+0000486c                I$$UDIV
+0000486c                __divu
+00004881                I$$UMOD
+00004881                __remu
+00004896                _dmaRcvIsr
+000048be                _memccpy
+000048e4                _GPIO_pinDirection
+00004904                _GPIO_pinWrite
+00004923                ___isinf
+00004940                _GPIO_pinRead
+00004954                __subd
+00004968                _GPIO_pinEnable
+0000497b                I$$LMPY
+0000497b                __mpyli
+0000498e                __register_unlock
+00004996                __register_lock
+0000499e                __nop
+000049a0                _strlen
+000049b1                __negd
+000049c4                _IRQ_globalDisable
+000049d4                _IRQ_globalEnable
+000049e4                __CSL_init
+000049f4                _CSL_init
+00004a00                _IRQ_globalRestore
+00004a0c                _abort
+00004a0d                C$$EXIT
+00004a14                _MCBSP_read16
+00004a1c                _MCBSP_write16
+00004a24                _CSL5502_LIB_
+00004a28                ___etext__
+00004a28                etext
+            00002520    __stack
+            00003520    __STACK_END
+            00003520    __sysstack
+            00003d20    _buffReceive
+            00003f20    _buffTransmit
+            00004120    __ctypes_
+            000043e4    ___cinit__
+            000043e4    cinit
+            00004580    _CSL_DmaData
+            000045fe    _CSL_McbspData
+            00004664    _CSL_SysData
+            00004686    _CSL_GpioData
+            000046b0    .bss
+            000046b0    ___bss__
+            000046b1    _teste
+            000046b2    _xmtEventId
+            000046b3    _rcvEventId
+            000046b4    _old_intm
+            000046b6    _dmaReceive
+            000046b8    _dmaTransmit
+            000046ba    _myconfig_receive
+            000046cc    _myconfig_transmit
+            000046e1    _message
+            000046ec    _hGPIO_group0
+            000046ee    _hGPIO_group1
+            000046f0    _hGPIO_group2
+            000046f2    _hGPIO_group3
+            000046f4    __lock
+            000046f6    __unlock
+            000046f8    __cleanup_ptr
+            000046fa    __dtors_ptr
+            000046fe    _aicMcbsp
+            00004700    ___end__
+            00004700    end
+0000fe00                _VECSTART
+0000fe08                nmi
+0000fe10                int0
+0000fe18                int1
+0000fe20                int2
+0000fe28                int3
+0000fe30                int4
+0000fe38                int5
+0000fe40                int6
+0000fe48                int7
+0000fe50                int8
+0000fe58                int9
+0000fe60                int10
+0000fe68                int11
+0000fe70                int12
+0000fe78                int13
+0000fe80                int14
+0000fe88                int15
+0000fe90                int16
+0000fe98                int17
+0000fea0                int18
+0000fea8                int19
+0000feb0                int20
+0000feb8                int21
+0000fec0                int22
+0000fec8                int23
+0000fed0                int24
+0000fed8                int25
+0000fee0                int26
+0000fee8                int27
+0000fef0                int28
+0000fef8                int29
 ffffffff                ___binit__
 ffffffff                ___c_args__
 ffffffff                ___pinit__
 ffffffff                binit
 ffffffff                pinit
 
-[165 symbols]
+[210 symbols]

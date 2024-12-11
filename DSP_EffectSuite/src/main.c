@@ -42,7 +42,6 @@ void main(void)
     Init_AIC3204(SF48KHz, DAC_GAIN, ADC_GAIN);
     configAudioDma(buffReceive, buffTransmit);
     initI2CButtons();
-
     Int16 i;
     /* Initialize source and destination buffers */
     for (i = 0; i <= (BUFF_SIZE - 1); i++) {
@@ -57,7 +56,10 @@ void main(void)
 
     while(1){
         stateMachineRun();
-        dsp_process(buffReceive, buffTransmit, BUFF_SIZE);
+        if(getSinal()){
+            dsp_process(buffReceive, buffTransmit, BUFF_SIZE);
+            resetSinal();
+        }
     }
 }
 

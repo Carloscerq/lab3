@@ -1,6 +1,9 @@
 # FIXED
 
 src/dma.obj: ../src/dma.c
+src/dma.obj: C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/stdio.h
+src/dma.obj: C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/linkage.h
+src/dma.obj: C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/stdarg.h
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/dma.h
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/tistdtypes.h
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/define.h
@@ -31,7 +34,6 @@ src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/cs
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_wdtimdat.h
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_rtcdat.h
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_time.h
-src/dma.obj: C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/linkage.h
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_i2cdat.h
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_uartdat.h
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_csldat.h
@@ -46,6 +48,12 @@ src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/cs
 src/dma.obj: C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_dmahal.h
 
 ../src/dma.c:
+
+C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/stdio.h:
+
+C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/linkage.h:
+
+C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/stdarg.h:
 
 C:/Users/felip/Documents/Projects/code_composer/DSP_EffectSuite/include/dma.h:
 
@@ -106,8 +114,6 @@ C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_wdtimdat.h:
 C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_rtcdat.h:
 
 C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_time.h:
-
-C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include/linkage.h:
 
 C:/Users/felip/Documents/Projects/code_composer/C55xxCSL/include/csl_i2cdat.h:
 

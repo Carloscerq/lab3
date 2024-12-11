@@ -5,6 +5,9 @@
 SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
+S55_SRCS += \
+../src/vectors_dma4.s55 
+
 C_SRCS += \
 ../src/aic3204.c \
 ../src/buttons.c \
@@ -14,6 +17,9 @@ C_SRCS += \
 ../src/main.c \
 ../src/oled.c \
 ../src/state_machine.c 
+
+S55_DEPS += \
+./src/vectors_dma4.d 
 
 C_DEPS += \
 ./src/aic3204.d \
@@ -33,7 +39,8 @@ OBJS += \
 ./src/lcd.obj \
 ./src/main.obj \
 ./src/oled.obj \
-./src/state_machine.obj 
+./src/state_machine.obj \
+./src/vectors_dma4.obj 
 
 OBJS__QUOTED += \
 "src\aic3204.obj" \
@@ -43,7 +50,11 @@ OBJS__QUOTED += \
 "src\lcd.obj" \
 "src\main.obj" \
 "src\oled.obj" \
-"src\state_machine.obj" 
+"src\state_machine.obj" \
+"src\vectors_dma4.obj" 
+
+S55_DEPS__QUOTED += \
+"src\vectors_dma4.d" 
 
 C_DEPS__QUOTED += \
 "src\aic3204.d" \
@@ -64,5 +75,8 @@ C_SRCS__QUOTED += \
 "../src/main.c" \
 "../src/oled.c" \
 "../src/state_machine.c" 
+
+S55_SRCS__QUOTED += \
+"../src/vectors_dma4.s55" 
 
 

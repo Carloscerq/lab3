@@ -4,7 +4,7 @@
  *  Created on: Nov 16, 2024
  *      Author: felip
  */
-
+#include <stdio.h>
 #include "dma.h"
 #include "define.h"
 #include "ezdsp5502.h"
@@ -14,6 +14,13 @@
 #include <csl_irq.h>
 #include <csl_dma.h>
 
+static Uint8 transferComplete = 0;
+extern void VECSTART(void);
+Uint8 teste = 0;
+
+Uint16 xmtEventId, rcvEventId;
+Uint32 old_intm;
+//interrupt void dmaRcvIsr(void);
 
 /* Define a DMA_Handle object */
 DMA_Handle dmaReceive;
@@ -44,10 +51,10 @@ DMA_Config myconfig_receive = {
     ),
 
     DMA_DMACICR_RMK(
-        DMA_DMACICR_AERRIE_ON,       // Enable interrupt for address error
+        DMA_DMACICR_AERRIE_OFF,       // Enable interrupt for address error
         DMA_DMACICR_BLOCKIE_OFF,
-        DMA_DMACICR_LASTIE_OFF,
-        DMA_DMACICR_FRAMEIE_ON,      // Interrupt at the end of the frame
+        DMA_DMACICR_LASTIE_ON,
+        DMA_DMACICR_FRAMEIE_OFF,      // Interrupt at the end of the frame
         DMA_DMACICR_FIRSTHALFIE_OFF,
         DMA_DMACICR_DROPIE_OFF,
         DMA_DMACICR_TIMEOUTIE_OFF
@@ -91,10 +98,10 @@ DMA_Config  myconfig_transmit = {
      ), /* DMACCR */
 
      DMA_DMACICR_RMK(
-         DMA_DMACICR_AERRIE_ON,
+         DMA_DMACICR_AERRIE_OFF,
          DMA_DMACICR_BLOCKIE_OFF,
          DMA_DMACICR_LASTIE_OFF,
-         DMA_DMACICR_FRAMEIE_ON,
+         DMA_DMACICR_FRAMEIE_OFF,
          DMA_DMACICR_FIRSTHALFIE_OFF,
          DMA_DMACICR_DROPIE_OFF,
          DMA_DMACICR_TIMEOUTIE_OFF
@@ -112,7 +119,17 @@ DMA_Config  myconfig_transmit = {
      2                   // DMACDEI - Destination element index
 };
 
+interrupt void dmaRcvIsr(void) {
+     //DMA_stop(dmaReception);        // Para a operação de recepção do DMA.
+    transferComplete = 1;
+    teste = 50;
+
+}
+
 void configAudioDma(Int16 *buffReceive, Int16 *buffTransmit){
+    transferComplete = 0;
+    CSL_init();
+    IRQ_setVecs((Uint32)(&VECSTART));
     /* Open DMA Channel */
     dmaReceive = DMA_open(DMA_CHA0, 0);
     dmaTransmit = DMA_open(DMA_CHA1, 0);
@@ -126,6 +143,29 @@ void configAudioDma(Int16 *buffReceive, Int16 *buffTransmit){
     /* Write configuration structure values to DMA control registers */
     DMA_config(dmaReceive, &myconfig_receive);
     DMA_config(dmaTransmit, &myconfig_transmit);
+
+    /* Get interrupt event associated with DMA receive and transmit */
+    xmtEventId = DMA_getEventId(dmaTransmit);
+    rcvEventId = DMA_getEventId(dmaReceive);
+
+    /* Temporarily disable interrupts and clear any pending */
+    /* interrupts for MCBSP transmit */
+    old_intm = IRQ_globalDisable();
+
+    /* Clear any pending interrupts for DMA channels */
+    IRQ_clear(xmtEventId);
+    IRQ_clear(rcvEventId);
+
+    /* Enable DMA interrupt in IER register */
+    IRQ_enable(xmtEventId);
+    IRQ_enable(rcvEventId);
+
+    /* Place DMA interrupt service addresses at associate vector */
+    //IRQ_plug(xmtEventId,&dmaXmtIsr);
+    IRQ_plug(rcvEventId,&dmaRcvIsr);
+
+    IRQ_globalEnable();
+    teste = 10;
 }
 
 /*
@@ -138,6 +178,7 @@ void startAudioDma (void)
     /* Enable DMA channel to begin transfer */
     DMA_start(dmaReceive);
     DMA_start(dmaTransmit);
+    IRQ_enable(rcvEventId);
 }
 
 /*
@@ -149,5 +190,13 @@ void stopAudioDma (void)
 {
     DMA_stop(dmaReceive);
     DMA_stop(dmaTransmit);
+}
+
+void resetSinal(){
+    transferComplete = 0;
+}
+
+Uint8 getSinal(){
+    return transferComplete;
 }
 
