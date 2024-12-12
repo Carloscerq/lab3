@@ -18,7 +18,7 @@ ORDERED_OBJS += \
 "./src/main.obj" \
 "./src/oled.obj" \
 "./src/state_machine.obj" \
-"./src/vectors_dma4.obj" \
+"./src/vectors_dma.obj" \
 "../VC5502.cmd" \
 $(GEN_CMDS__FLAG) \
 -lrts55x.lib \
@@ -153,8 +153,8 @@ DSP_EffectSuite.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "src\aic3204.obj" "src\buttons.obj" "src\dma.obj" "src\dsp_effects.obj" "src\lcd.obj" "src\main.obj" "src\oled.obj" "src\state_machine.obj" "src\vectors_dma4.obj" 
-	-$(RM) "src\vectors_dma4.d" 
+	-$(RM) "src\aic3204.obj" "src\buttons.obj" "src\dma.obj" "src\dsp_effects.obj" "src\lcd.obj" "src\main.obj" "src\oled.obj" "src\state_machine.obj" "src\vectors_dma.obj" 
+	-$(RM) "src\vectors_dma.d" 
 	-$(RM) "src\aic3204.d" "src\buttons.d" "src\dma.d" "src\dsp_effects.d" "src\lcd.d" "src\main.d" "src\oled.d" "src\state_machine.d" 
 	-@echo 'Finished clean'
 	-@echo ' '

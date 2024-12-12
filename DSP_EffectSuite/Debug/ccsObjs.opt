@@ -6,7 +6,7 @@
 "./src/main.obj"
 "./src/oled.obj"
 "./src/state_machine.obj"
-"./src/vectors_dma4.obj"
+"./src/vectors_dma.obj"
 "../VC5502.cmd"
 -lrts55x.lib
 -lezdsp5502bsl.lib

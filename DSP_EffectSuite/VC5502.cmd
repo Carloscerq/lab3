@@ -49,37 +49,21 @@ MEMORY
 
 SECTIONS
 {
-   .text     >  DARAM align(32) fill = 20h { * (.text)  }
-
-   /* Primary system stack        */
-   .stack    >  DARAM align(32) fill = 00h
-   /* Secondary system stack      */
-   .sysstack >  DARAM align(32) fill = 00h
-   /* CSL data                    */
-   .csldata  >  DARAM align(64) fill = 00h
-   /* Initialized vars            */
-   .data     >  DARAM align(32) fill = 00h
-    /* Global & static vars        */
-   .bss      >  DARAM align(32) fill = 00h
-   /* Constant data               */
-   .const    >  DARAM align(32) fill = 00h
-   /* Dynamic memory (malloc)     */
-   .sysmem   >  DARAM
-   /* Switch statement tables     */
-   .switch   >  DARAM
-   /* Auto-initialization tables  */
-   .cinit    >  DARAM
-   /* Initialization fn tables    */
-   .pinit    >  DARAM align(32) fill = 00h
-   /* C I/O buffers               */
-   .cio      >  DARAM align(32) fill = 00h
-    /* Arguments to main()         */
-   .args     >  DARAM align(32) fill = 00h
-
-	/* interrupt vector table must be on 256 "page" boundry*/
-	.vectors:  >  VECS
-
-	dmaMem    >  DARAM align(32) fill = 00h
-
-   .ioport   >  IOPORT PAGE 2         /* Global & static ioport vars */
+   vectors   (NOLOAD)
+   .text     >  DARAM align(32) fill = 20h { * (.text)  }     // Code
+   .stack    >  DARAM align(32) fill = 00h                    // Primary system stack
+   .sysstack >  DARAM align(32) fill = 00h                    // Secondary system stack
+   .csldata  >  DARAM align(64) fill = 00h                    // CSL data
+   .data     >  DARAM align(32) fill = 00h                    // Initialized vars
+   .bss      >  DARAM align(32) fill = 00h                    // Global & static vars
+   .const    >  DARAM align(32) fill = 00h                    // Constant data
+   .sysmem   >  DARAM                                         // Dynamic memory (malloc)
+   .switch   >  DARAM                                         // Switch statement tables
+   .cinit    >  DARAM                                         // Auto-initialization tables
+   .pinit    >  DARAM align(32) fill = 00h                    // Initialization fn tables
+   .cio      >  DARAM align(32) fill = 00h                    // C I/O buffers
+   .args     >  DARAM align(32) fill = 00h                    // Arguments to main()
+   .vectors  >  VECS                                          // Interrupt vector table
+   dmaMem    >  DARAM align(32) fill = 00h                    // DMA memory
+   .ioport   >  IOPORT PAGE 2                                 // I/O port variables
 }
