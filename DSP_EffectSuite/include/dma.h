@@ -6,5 +6,6 @@
 void configAudioDma(Int16 *buffReceive, Int16 *buffTransmit);
 void startAudioDma (void);
 void stopAudioDma (void);
+void enableInterrupt(void);
 
 #endif /* INCLUDE_DMA_H_ */

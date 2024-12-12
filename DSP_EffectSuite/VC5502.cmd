@@ -1,55 +1,20 @@
-/*
- * c5505.cmd
- *
- *  Created on: Mar 17, 2012
- *      Author: BLEE, modified
- *
- *  For the book "Real Time Digital Signal Processing:
- *                Fundamentals, Implementation and Application, 3rd Ed"
- *                By Sen M. Kuo, Bob H. Lee, and Wenshun Tian
- *                Publisher: John Wiley and Sons, Ltd
- */
-/*
- * File name: C5505.cmd
- *
- * Description: This file provides memory map and section map.
- *
- * Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
- *
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-*/
-
-
 /******************************************************************************/
-/* C5505.cmd - COMMAND FILE FOR LINKING C PROGRAMS IN LARGE/HUGE MEMORY MODEL  */
+/* LNKX.CMD - COMMAND FILE FOR LINKING C PROGRAMS IN LARGE/HUGE MEMORY MODEL  */
+/*                                                                            */
+/* Usage:                                                                     */
+/*  cl55 <src files> -z -o<out file> -m<map file> lnkx.cmd -l<RTS library>   */
+/*                                                                            */
+/* Description: This file is a sample command file that can be used for       */
+/*              linking programs built with the C Compiler.  Use it as a      */
+/*              guideline; you  may want to change the allocation scheme      */
+/*              according to the size of your program and the memory layout   */
+/*              of your target system.                                        */
+/*                                                                            */
+/*   Notes: (1) You must specify the directory in which <RTS library> is      */
+/*              located.  Either add a "-i<directory>" line to this file      */
+/*              file, or use the system environment variable C55X_C_DIR to    */
+/*              specify a search path for the libraries.                      */
+/*                                                                            */
 /******************************************************************************/
 
 -stack    0x2000      /* Primary stack size   */
@@ -59,47 +24,46 @@
 -c                    /* Use C linking conventions: auto-init vars at runtime */
 -u _Reset             /* Force load of reset interrupt handler                */
 
+/* SPECIFY THE SYSTEM MEMORY MAP */
+
 MEMORY
 {
-    MMR     (RW) : origin = 0000000h length = 0000c0h   /* MMRs */
-    DARAM (RW)    : origin = 00000c0h length = 00ff40h  /* On-chip DARAM */
-    SARAM   (RW)  : origin = 0030000h length = 01e000h  /* On-chip SARAM */
+ PAGE 0:  /* ---- Unified Program/Data Address Space ---- */
 
-    SAROM_0 (RX)  : origin = 0fe0000h length = 008000h 	/* On-chip ROM 0 */
-    SAROM_1 (RX)  : origin = 0fe8000h length = 008000h 	/* On-chip ROM 1 */
-    SAROM_2 (RX)  : origin = 0ff0000h length = 008000h 	/* On-chip ROM 2 */
-    SAROM_3 (RX)  : origin = 0ff8000h length = 008000h 	/* On-chip ROM 3 */
+  MMR    (RWIX): origin = 0x000000, length = 0x0000C0  /* MMRs */
+  BTRSVD (RWIX): origin = 0x0000C0, length = 0x000240  /* Reserved for Boot Loader */
+  DARAM  (RWIX): origin = 0x000300, length = 0x00FB00  /* 64KB - MMRs - VECS*/
+  VECS   (RWIX): origin = 0x00FE00, length = 0x000200  /* 256 bytes Vector Table */
+  CE0          : origin = 0x010000, length = 0x3f0000  /* 4M minus 64K Bytes */
+  CE1          : origin = 0x400000, length = 0x400000
+  CE2          : origin = 0x800000, length = 0x400000
+  CE3          : origin = 0xC00000, length = 0x3F8000
+  PDROM   (RIX): origin = 0xFF8000, length = 0x008000  /*  32KB */
 
-    EMIF_CS0 (RW)  : origin = 0050000h  length = 07B0000h   /* mSDR */
-	EMIF_CS2 (RW)  : origin = 0800000h  length = 0400000h   /* ASYNC1 : NAND */
-	EMIF_CS3 (RW)  : origin = 0C00000h  length = 0200000h   /* ASYNC2 : NAND  */
-	EMIF_CS4 (RW)  : origin = 0E00000h  length = 0100000h   /* ASYNC3 : NOR */
-	EMIF_CS5 (RW)  : origin = 0F00000h  length = 00E0000h   /* ASYNC4 : SRAM */
+ PAGE 2:  /* -------- 64K-word I/O Address Space -------- */
 
+  IOPORT (RWI) : origin = 0x000000, length = 0x020000
 }
 
+/* SPECIFY THE SECTIONS ALLOCATION INTO MEMORY */
 
 SECTIONS
 {
-     vectors  (NOLOAD)                          /* Interrupt vector table, rts55x.lib */
-     vector   : {} > DARAM PAGE 0 ALIGN = 256   /* Interrupt vector table, vector.asm */
-    .bss        : > DARAM /* fill = 0 */
-    .stack      : > DARAM
-    .sysstack   : > DARAM
-	.sysmem 	: > DARAM
-    .text       : > SARAM
-    .data       : > DARAM
-	.cinit 		: > DARAM
-	.const 		: > DARAM
-	.cio		: > DARAM
-	.csldata    : > DARAM
-	.usect   	: > DARAM
-	.switch     : > DARAM
-	.emif_cs0   : > EMIF_CS0
-	.emif_cs2   : > EMIF_CS2
-	.emif_cs3   : > EMIF_CS3
-	.emif_cs4   : > EMIF_CS4
-	.emif_cs5   : > EMIF_CS5
-	dmaMem		  >	DARAM
-
+   vectors   (NOLOAD)
+   .text     >  DARAM align(32) fill = 20h { * (.text)  }     // Code
+   .stack    >  DARAM align(32) fill = 00h                    // Primary system stack
+   .sysstack >  DARAM align(32) fill = 00h                    // Secondary system stack
+   .csldata  >  DARAM align(64) fill = 00h                    // CSL data
+   .data     >  DARAM align(32) fill = 00h                    // Initialized vars
+   .bss      >  DARAM align(32) fill = 00h                    // Global & static vars
+   .const    >  DARAM align(32) fill = 00h                    // Constant data
+   .sysmem   >  DARAM                                         // Dynamic memory (malloc)
+   .switch   >  DARAM                                         // Switch statement tables
+   .cinit    >  DARAM                                         // Auto-initialization tables
+   .pinit    >  DARAM align(32) fill = 00h                    // Initialization fn tables
+   .cio      >  DARAM align(32) fill = 00h                    // C I/O buffers
+   .args     >  DARAM align(32) fill = 00h                    // Arguments to main()
+   .vectors  >  VECS                                          // Interrupt vector table
+   dmaMem    >  DARAM align(32) fill = 00h                    // DMA memory
+   .ioport   >  IOPORT PAGE 2                                 // I/O port variables
 }
