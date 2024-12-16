@@ -18,11 +18,11 @@ char message[10];
 extern void oled_writeText(const char* text, Uint8 page);
 extern void oled_fillPage(Uint8 page, Uint8 value);
 
-// Função interna para mudar de estado
+// Funï¿½ï¿½o interna para mudar de estado
 static void changeState(State newState) {
     currentState = newState;
 
-    // Ações associadas à transição de estado
+    // Aï¿½ï¿½es associadas ï¿½ transiï¿½ï¿½o de estado
     switch (newState) {
         case STATE_WELCOME:
             oled_writeText("WELCOME!", 0);
@@ -53,10 +53,16 @@ static void changeState(State newState) {
             oled_writeText("1:NEXT     2:SELECT", 1);
             break;
 
-        case STATE_EFFECT_RUNNING:
+        case STATE_EFFECT_SELECT_RUNNING:
             sprintf(message, "EFFECT: %u", selectedEffectIndex);
             oled_writeText(message, 0);
             oled_writeText("RUNNING..!   2:BACK", 1);
+            break;
+
+        case STATE_EFFECT_ARCHIVE_RUNNING:
+            sprintf(message, "EFFECT: %u", selectedEffectIndex);
+            oled_writeText(message, 0);
+            oled_writeText("ARCHIVING..!   2:BACK", 1);
             break;
 
         default:
@@ -64,7 +70,7 @@ static void changeState(State newState) {
     }
 }
 
-// Inicializa a máquina de estados
+// Inicializa a mï¿½quina de estados
 void stateMachineInit(void) {
     currentState = STATE_WELCOME;
     selectedEffectIndex = 0;
@@ -74,7 +80,7 @@ void stateMachineInit(void) {
     changeState(STATE_WELCOME);
 }
 
-// Lógica principal da máquina de estados
+// Lï¿½gica principal da mï¿½quina de estados
 void stateMachineRun(void) {
     checkButtons();
 
@@ -97,7 +103,12 @@ void stateMachineRun(void) {
             break;
 
         case STATE_ARCHIVE_MODE:
-            if (getButtonState(BUTTON_SELECT)) {
+            if (getButtonState(BUTTON_NEXT)) {
+                selectedEffectIndex = (selectedEffectIndex + 1) % 10; // number of DSP effects + 1
+                changeState(STATE_ARCHIVE_MODE);
+            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex < 9) {
+                changeState(STATE_EFFECT_ARCHIVE_RUNNING);
+            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex == 9){
                 changeState(STATE_SELECT_MODE);
             }
             break;
@@ -107,15 +118,21 @@ void stateMachineRun(void) {
                 selectedEffectIndex = (selectedEffectIndex + 1) % 9; // number of DSP effects + 1
                 changeState(STATE_SELECT_EFFECT);
             } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex < 8) {
-                changeState(STATE_EFFECT_RUNNING);
+                changeState(STATE_EFFECT_SELECT_RUNNING);
             } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex == 8){
                 changeState(STATE_SELECT_MODE);
             }
             break;
 
-        case STATE_EFFECT_RUNNING:
+        case STATE_EFFECT_SELECT_RUNNING:
             if (getButtonState(BUTTON_SELECT)) {
                 changeState(STATE_SELECT_EFFECT);
+            }
+            break;
+            
+        case STATE_EFFECT_ARCHIVE_RUNNING:
+            if (getButtonState(BUTTON_SELECT)) {
+                changeState(STATE_ARCHIVE_MODE);
             }
             break;
 

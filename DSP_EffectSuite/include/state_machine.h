@@ -2,19 +2,19 @@
 #define INCLUDE_STATE_MACHINE_H_
 
 
-// Enumeração dos estados possíveis
+// Enumeraï¿½ï¿½o dos estados possï¿½veis
 typedef enum {
     STATE_WELCOME,         // Estado de boas-vindas
-    STATE_SELECT_MODE,     // Seleção do modo (tempo real ou arquivo)
+    STATE_SELECT_MODE,     // Seleï¿½ï¿½o do modo (tempo real ou arquivo)
     STATE_ARCHIVE_MODE,
-    STATE_SELECT_EFFECT,   // Seleção do efeito
-    STATE_EFFECT_RUNNING   // Efeito em execução
+    STATE_SELECT_EFFECT,   // Seleï¿½ï¿½o do efeito
+    STATE_EFFECT_SELECT_RUNNING   // Efeito em execuï¿½ï¿½o
 } State;
 
-// Inicializa a máquina de estados
+// Inicializa a mï¿½quina de estados
 void stateMachineInit(void);
 
-// Executa a lógica da máquina de estados
+// Executa a lï¿½gica da mï¿½quina de estados
 void stateMachineRun(void);
 
 
