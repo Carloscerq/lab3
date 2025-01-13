@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include "state_machine.h"
+#include "dsp_effects.h"
 #include "lcd.h"
 #include "buttons.h"
 
 //---------Global data definition---------
 
 #define REALTIME 0
-#define ARCHIVE 1
+#define FILE 1
 
 static State currentState = STATE_WELCOME;
 static Uint8 selectedEffectIndex = 0;
@@ -18,11 +19,11 @@ char message[10];
 extern void oled_writeText(const char* text, Uint8 page);
 extern void oled_fillPage(Uint8 page, Uint8 value);
 
-// Função interna para mudar de estado
+// Funï¿½ï¿½o interna para mudar de estado
 static void changeState(State newState) {
     currentState = newState;
 
-    // Ações associadas à transição de estado
+    // Aï¿½ï¿½es associadas ï¿½ transiï¿½ï¿½o de estado
     switch (newState) {
         case STATE_WELCOME:
             oled_writeText("WELCOME!", 0);
@@ -33,19 +34,26 @@ static void changeState(State newState) {
             if (!selectedMode){
                 oled_writeText("REAL TIME", 0);
             } else {
-                oled_writeText("ARCHIVE", 0);
+                oled_writeText("FILE", 0);
             }
             oled_writeText("1:NEXT     2:SELECT", 1);
             break;
 
-        case STATE_ARCHIVE_MODE:
-            oled_writeText("EFFECTS APPLIED!", 0);
-            oled_writeText("           2:BACK", 1);
+        case STATE_FILE_MODE:
+            if (selectedEffectIndex < EFFECTS_LENGTH) {// number of DSP effects + 1
+                sprintf(message, "%s", effects[selectedEffectIndex].file_name);
+                oled_writeText(message, 0);
+            } else if (selectedEffectIndex == EFFECTS_LENGTH) {
+                oled_writeText("ALL", 0);
+            } else {
+                oled_writeText("-- PREVIOUS MENU", 0);
+            }
+            oled_writeText("1:NEXT     2:SELECT", 1);
             break;
 
         case STATE_SELECT_EFFECT:
-            if (selectedEffectIndex < 8) {// number of DSP effects + 1
-                sprintf(message, "EFFECT: %u", selectedEffectIndex);
+            if (selectedEffectIndex < EFFECTS_LENGTH) {// number of DSP effects + 1
+                sprintf(message, "%s", effects[selectedEffectIndex].file_name);
                 oled_writeText(message, 0);
             } else {
                 oled_writeText("-- PREVIOUS MENU", 0);
@@ -53,10 +61,16 @@ static void changeState(State newState) {
             oled_writeText("1:NEXT     2:SELECT", 1);
             break;
 
-        case STATE_EFFECT_RUNNING:
-            sprintf(message, "EFFECT: %u", selectedEffectIndex);
+        case STATE_EFFECT_SELECT_RUNNING:
+            sprintf(message, "%s", effects[selectedEffectIndex].file_name);
             oled_writeText(message, 0);
             oled_writeText("RUNNING..!   2:BACK", 1);
+            break;
+
+        case STATE_EFFECT_FILE_RUNNING:
+            sprintf(message, "%s", effects[selectedEffectIndex].file_name);
+            oled_writeText(message, 0);
+            oled_writeText("APPLYING.. 2:BACK", 1);
             break;
 
         default:
@@ -64,7 +78,7 @@ static void changeState(State newState) {
     }
 }
 
-// Inicializa a máquina de estados
+// Inicializa a mï¿½quina de estados
 void stateMachineInit(void) {
     currentState = STATE_WELCOME;
     selectedEffectIndex = 0;
@@ -74,7 +88,7 @@ void stateMachineInit(void) {
     changeState(STATE_WELCOME);
 }
 
-// Lógica principal da máquina de estados
+// Lï¿½gica principal da mï¿½quina de estados
 void stateMachineRun(void) {
     checkButtons();
 
@@ -91,31 +105,44 @@ void stateMachineRun(void) {
                 changeState(STATE_SELECT_MODE);
             } else if (getButtonState(BUTTON_SELECT) && selectedMode == REALTIME) {
                 changeState(STATE_SELECT_EFFECT);
-            } else if (getButtonState(BUTTON_SELECT) && selectedMode == ARCHIVE) {
-                changeState(STATE_ARCHIVE_MODE);
+            } else if (getButtonState(BUTTON_SELECT) && selectedMode == FILE) {
+                changeState(STATE_FILE_MODE);
             }
             break;
 
-        case STATE_ARCHIVE_MODE:
-            if (getButtonState(BUTTON_SELECT)) {
+        case STATE_FILE_MODE:
+            if (getButtonState(BUTTON_NEXT)) {
+                selectedEffectIndex = (selectedEffectIndex + 1) % (EFFECTS_LENGTH + 2); // number of DSP effects + 1
+                changeState(STATE_FILE_MODE);
+            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex < EFFECTS_LENGTH) {
+                changeState(STATE_EFFECT_FILE_RUNNING);
+            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex == EFFECTS_LENGTH){
+                changeState(STATE_EFFECT_FILE_RUNNING); // ALL CASE
+            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex == EFFECTS_LENGTH + 1){
                 changeState(STATE_SELECT_MODE);
             }
             break;
 
         case STATE_SELECT_EFFECT:
             if (getButtonState(BUTTON_NEXT)) {
-                selectedEffectIndex = (selectedEffectIndex + 1) % 9; // number of DSP effects + 1
+                selectedEffectIndex = (selectedEffectIndex + 1) % (EFFECTS_LENGTH + 1); // number of DSP effects + 1
                 changeState(STATE_SELECT_EFFECT);
-            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex < 8) {
-                changeState(STATE_EFFECT_RUNNING);
-            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex == 8){
+            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex < EFFECTS_LENGTH) {
+                changeState(STATE_EFFECT_SELECT_RUNNING);
+            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex == EFFECTS_LENGTH){
                 changeState(STATE_SELECT_MODE);
             }
             break;
 
-        case STATE_EFFECT_RUNNING:
+        case STATE_EFFECT_SELECT_RUNNING:
             if (getButtonState(BUTTON_SELECT)) {
                 changeState(STATE_SELECT_EFFECT);
+            }
+            break;
+            
+        case STATE_EFFECT_FILE_RUNNING:
+            if (getButtonState(BUTTON_SELECT)) {
+                changeState(STATE_FILE_MODE);
             }
             break;
 
