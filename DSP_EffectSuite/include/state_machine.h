@@ -6,9 +6,10 @@
 typedef enum {
     STATE_WELCOME,         // Estado de boas-vindas
     STATE_SELECT_MODE,     // Sele��o do modo (tempo real ou arquivo)
-    STATE_ARCHIVE_MODE,
+    STATE_FILE_MODE,
     STATE_SELECT_EFFECT,   // Sele��o do efeito
-    STATE_EFFECT_SELECT_RUNNING   // Efeito em execu��o
+    STATE_EFFECT_SELECT_RUNNING,  // Efeito em execu��o
+    STATE_EFFECT_FILE_RUNNING
 } State;
 
 // Inicializa a m�quina de estados
