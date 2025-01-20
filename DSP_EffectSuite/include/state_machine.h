@@ -1,6 +1,7 @@
 #ifndef INCLUDE_STATE_MACHINE_H_
 #define INCLUDE_STATE_MACHINE_H_
 
+#include "tistdtypes.h"
 
 // Enumera��o dos estados poss�veis
 typedef enum {
@@ -18,5 +19,6 @@ void stateMachineInit(void);
 // Executa a l�gica da m�quina de estados
 void stateMachineRun(void);
 
+Uint8 getSelectedMode();
 
 #endif /* INCLUDE_STATE_MACHINE_H_ */

@@ -3,7 +3,7 @@
 
 #include "tistdtypes.h"
 
-#define GLYPH_COUNT 40 // N�mero de caracteres disponiveis
+#define GLYPH_COUNT 41 // N�mero de caracteres disponiveis
 
 typedef struct {
     char character;

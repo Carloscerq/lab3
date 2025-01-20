@@ -9,9 +9,9 @@
 #define REALTIME 0
 #define FILE 1
 
-static State currentState = STATE_WELCOME;
-static Uint8 selectedEffectIndex = 0;
-static Uint8 selectedMode = REALTIME; // 0 = Tempo Real, 1 = Arquivo
+State currentState = STATE_WELCOME;
+Uint8 selectedEffectIndex = 0;
+Uint8 selectedMode = REALTIME; // 0 = Tempo Real, 1 = Arquivo
 
 char message[10];
 
