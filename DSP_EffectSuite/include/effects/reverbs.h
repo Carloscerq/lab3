@@ -1,32 +1,37 @@
 #ifndef INCLUDE_EFFECTS_REVERBS_H_
 #define INCLUDE_EFFECTS_REVERBS_H_
 
+#include <stdint.h>
+#include <stddef.h>
 #include "tistdtypes.h"
 
-// Estrutura para armazenar os parâmetros do reverb
+// Estrutura de configuração para filtros Comb e All-Pass
 typedef struct {
-    float decay;       // Decaimento do reverb
-    float preDelay;    // Pré-delay
-    float damping;     // Fator de amortecimento
-    float roomSize;    // Tamanho da sala
-} ReverbParams;
+    float delayMs;
+    float decayGain;
+    size_t delaySamples;
+    float *buffer;
+    size_t bufferSize;
+    size_t writeIndex;
+} FilterConfig;
+
+// Estrutura de configuração do Reverb
+typedef struct {
+    FilterConfig *combFilters;
+    size_t numCombFilters;
+    FilterConfig *allPassFilters;
+    size_t numAllPassFilters;
+    float wetLevel;  // Nível do sinal processado
+    float sampleRate;
+} ReverbConfig;
 
 void initReverbHall2(void);
-Int16 processReverbHall2(Int16 sample);
-
 void initReverbStageA(void);
-Int16 processReverbStageA(Int16 sample);
-
 void initReverbStageBb(void);
-Int16 processReverbStageBb(Int16 sample);
-
 void initReverbStageDb(void);
-Int16 processReverbStageDb(Int16 sample);
-
 void initReverbStageFb(void);
-Int16 processReverbStageFb(Int16 sample);
-
 void initReverbStageGTHT(void);
-Int16 processReverbStageGTHT(Int16 sample);
+
+void processReverbBlock(Int16 *input, Int16 *output, size_t blockSize);
 
 #endif /* INCLUDE_EFFECTS_REVERBS_H_ */

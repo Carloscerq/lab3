@@ -1,15 +1,16 @@
 #ifndef INCLUDE_DSP_EFFECTS_H_
 #define INCLUDE_DSP_EFFECTS_H_
 
+#include <stdlib.h>
 #include "tistdtypes.h"
 
 #define EFFECTS_LENGTH 8
 
 typedef struct {
-    int id;
+    Int8 id;
     char file_name[20];
     void (*init)(void);
-    Int16 (*process)(Int16 sample);
+    void (*process)(Int16 *input, Int16 *output, size_t blockSize);
 } Effect;
 
 extern Effect effects[EFFECTS_LENGTH];

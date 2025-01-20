@@ -1,11 +1,10 @@
 #ifndef INCLUDE_EFFECTS_PHASER_H_
 #define INCLUDE_EFFECTS_PHASER_H_
 
-
+#include <stdlib.h>
 #include "tistdtypes.h"
 
 void initPhaser(void);
-Int16 processPhaser(Int16 sample);
-
+void processPhaser(Int16 *input, Int16 *output, size_t blockSize);
 
 #endif /* INCLUDE_EFFECTS_PHASER_H_ */

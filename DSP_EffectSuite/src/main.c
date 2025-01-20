@@ -32,7 +32,7 @@ extern Int16 oled_start();
 //---------Function prototypes---------
 void cleanBuffers(void);
 void processRealtime(Int16 *input, Int16 *output, Int16 size);
-void processFile(const char *inputFile, const char *outputFile, int effectIndex);
+void processFile(const char *inputFile, const char *outputFile, Int16 effectIndex);
 
 //---------main routine---------
 void main(void){
@@ -45,6 +45,7 @@ void main(void){
 
     cleanBuffers();
 
+    // TODO: Set the dma initialization for when you actually use it
     startAudioDma();
     EZDSP5502_MCBSP_init();  // Configure and start McBSP
 
@@ -53,8 +54,9 @@ void main(void){
 
     while(1){
         stateMachineRun();
+        // TODO: logic to apply effects in file and in real time (see FSM data)
         if (dmaInterruptFlag) {
-            //dsp_process(buffReceive, buffTransmit, BUFF_SIZE);
+            processRealtime(buffReceive, buffTransmit, BUFF_SIZE);
             dmaInterruptFlag = 0;
             enableInterrupt();
         }
@@ -71,10 +73,7 @@ void cleanBuffers(void){
 }
 
 void processRealtime(Int16 *input, Int16 *output, Int16 size) {
-    Int16 i;
-    for (i = 0; i < size; i++) {
-        output[i] = effects[selectedEffectIndex].process(input[i]);
-    }
+    effects[selectedEffectIndex].process(input, output, size);
 }
 
 // Create the wave file header
@@ -107,9 +106,10 @@ void wHeader(Uint8 *w, float f1, float f2, Uint32 bytes)
     return;
 }
 
-void processFile(const char *inputFile, const char *outputFile, int effectIndex) {
+void processFile(const char *inputFile, const char *outputFile, Int16 effectIndex) {
     FILE *fpIn, *fpOut;
-    Int16 buffer[BUFF_SIZE];
+    Int16 inputBuffer[BUFF_SIZE];
+    Int16 outputBuffer[BUFF_SIZE];
     Uint8 temp[2 * BUFF_SIZE];
     Uint8 waveHeader[44];
     Uint32 cnt = 0;
@@ -125,22 +125,28 @@ void processFile(const char *inputFile, const char *outputFile, int effectIndex)
         return;
     }
 
-    Int16 i, j;
-
     // Ler e escrever cabeçalho do arquivo de entrada
     fread(waveHeader, sizeof(Uint8), 44, fpIn);
     fwrite(waveHeader, sizeof(Uint8), 44, fpOut);
 
-    // Processar dados de áudio
+    // Processar dados de áudio em blocos
+    Uint16 i, j;
     while (fread(temp, sizeof(Uint8), 2 * BUFF_SIZE, fpIn) == 2 * BUFF_SIZE) {
-        for (i = 0, j = 0; i < BUFF_SIZE; i++) {
-            buffer[i] = temp[j++] | (temp[j++] << 8);  // Combinar bytes para formar Int16
-            buffer[i] = effects[selectedEffectIndex].process(buffer[i]);  // Aplicar o efeito
+        // Combinar bytes para formar Int16 no buffer de entrada
+        for ( i = 0, j = 0; i < BUFF_SIZE; i++) {
+            inputBuffer[i] = temp[j++] | (temp[j++] << 8);
         }
+
+        // Aplicar o efeito ao bloco de amostras
+        effects[effectIndex].process(inputBuffer, outputBuffer, BUFF_SIZE);
+
+        // Dividir Int16 em bytes para o buffer de saída
         for (i = 0, j = 0; i < BUFF_SIZE; i++) {
-            temp[j++] = buffer[i] & 0xFF;  // Byte menos significativo
-            temp[j++] = (buffer[i] >> 8) & 0xFF;  // Byte mais significativo
+            temp[j++] = outputBuffer[i] & 0xFF;
+            temp[j++] = (outputBuffer[i] >> 8) & 0xFF;
         }
+
+        // Escrever bloco processado no arquivo de saída
         fwrite(temp, sizeof(Uint8), 2 * BUFF_SIZE, fpOut);
         cnt += BUFF_SIZE;
     }
