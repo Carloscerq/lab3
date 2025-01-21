@@ -26,7 +26,6 @@ Int16 buffTransmit[BUFF_SIZE];
 
 //---------Extern definition---------
 extern volatile int dmaInterruptFlag;
-extern Uint8 selectedEffectIndex;
 extern Int16 oled_start();
 
 //---------Function prototypes---------
@@ -42,23 +41,42 @@ void main(void){
     Init_AIC3204(DAC_GAIN, ADC_GAIN);
     configAudioDma(buffReceive, buffTransmit);
     initI2CButtons();
-
     cleanBuffers();
-
-    // TODO: Set the dma initialization for when you actually use it
-    startAudioDma();
-    EZDSP5502_MCBSP_init();  // Configure and start McBSP
-
     oled_start();
     stateMachineInit();
 
     while(1){
         stateMachineRun();
-        // TODO: logic to apply effects in file and in real time (see FSM data)
-        if (dmaInterruptFlag) {
-            processRealtime(buffReceive, buffTransmit, BUFF_SIZE);
-            dmaInterruptFlag = 0;
-            enableInterrupt();
+
+        if (getSelectedMode() == REALTIME_MODE && getCurrentState() == STATE_EFFECT_SELECT_RUNNING) {
+            startAudioDma();
+            EZDSP5502_MCBSP_init();  // Configure and start McBSP
+
+            while (getCurrentState() == STATE_EFFECT_SELECT_RUNNING) {
+                stateMachineRun();
+                if (dmaInterruptFlag) {
+                    processRealtime(buffReceive, buffTransmit, BUFF_SIZE);
+                    dmaInterruptFlag = 0;
+                    enableInterrupt();
+                }
+            }
+
+            stopAudioDma();
+            EZDSP5502_MCBSP_close();
+        }
+
+        if (getSelectedMode() == FILE_MODE && getCurrentState() == STATE_EFFECT_FILE_RUNNING) {
+            const char *inputFile = "../data/original.wav";
+            char outputFile[50];
+
+            const char *effectFileName = effects[getSelectedEffectIndex()].file_name;
+
+            snprintf(outputFile, sizeof(outputFile), "../data/%s_output.wav", effectFileName);
+
+            processFile(inputFile, outputFile, getSelectedEffectIndex());
+
+            // Notificar a FSM de que a operação foi concluída
+            stateMachineNotifyFileComplete();
         }
     }
 }
@@ -73,7 +91,7 @@ void cleanBuffers(void){
 }
 
 void processRealtime(Int16 *input, Int16 *output, Int16 size) {
-    effects[selectedEffectIndex].process(input, output, size);
+    effects[getSelectedEffectIndex()].process(input, output, size);
 }
 
 // Create the wave file header
@@ -114,6 +132,10 @@ void processFile(const char *inputFile, const char *outputFile, Int16 effectInde
     Uint8 waveHeader[44];
     Uint32 cnt = 0;
 
+    // Imprimir nomes dos arquivos e índice do efeito
+    printf("Input File: %s\n", inputFile);
+    printf("Output File: %s\n", outputFile);
+
     // Abrir arquivos
     fpIn = fopen(inputFile, "rb");
     fpOut = fopen(outputFile, "wb");
@@ -149,6 +171,7 @@ void processFile(const char *inputFile, const char *outputFile, Int16 effectInde
         // Escrever bloco processado no arquivo de saída
         fwrite(temp, sizeof(Uint8), 2 * BUFF_SIZE, fpOut);
         cnt += BUFF_SIZE;
+        printf("Selected Effect Index: %d\n", cnt);
     }
 
     // Atualizar cabeçalho WAV com informações finais
