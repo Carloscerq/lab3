@@ -130,7 +130,7 @@ void processFile(const char *inputFile, const char *outputFile, Int16 effectInde
     Int16 outputBuffer[BUFF_SIZE];
     Uint8 temp[2 * BUFF_SIZE];
     Uint8 waveHeader[44];
-    Uint32 cnt = 0;
+    Int32 cnt = 0;
 
     // Imprimir nomes dos arquivos e índice do efeito
     printf("Input File: %s\n", inputFile);
@@ -171,7 +171,7 @@ void processFile(const char *inputFile, const char *outputFile, Int16 effectInde
         // Escrever bloco processado no arquivo de saída
         fwrite(temp, sizeof(Uint8), 2 * BUFF_SIZE, fpOut);
         cnt += BUFF_SIZE;
-        printf("Selected Effect Index: %d\n", cnt);
+        printf("%ld data samples processed\n", cnt);
     }
 
     // Atualizar cabeçalho WAV com informações finais
