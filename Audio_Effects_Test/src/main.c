@@ -23,6 +23,7 @@ int main(void){
 
     snprintf(outputFile, sizeof(outputFile), "data/%s_output.wav", effectFileName);
 
+    effects[INDEX_EFFECT].init();
     processFile(inputFile, outputFile, INDEX_EFFECT);
 
     return 0;
@@ -107,7 +108,7 @@ void processFile(const char *inputFile, const char *outputFile, int16_t effectIn
         // Escrever bloco processado no arquivo de saída
         fwrite(temp2, sizeof(uint8_t), 2 * BUFF_SIZE, fpOut);
         cnt += BUFF_SIZE;
-        printf("%d data samples processed\n", cnt);
+        //printf("%d data samples processed\n", cnt);
     }
 
     // Atualizar cabeçalho WAV com informações finais

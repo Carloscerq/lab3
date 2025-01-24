@@ -11,7 +11,7 @@ OBJ_DIR = build
 # Compilador e flags
 CC = gcc
 CFLAGS = -Wall -Wextra -I$(INC_DIR) -I$(EFFECTS_INC_DIR) -g
-LDFLAGS =
+LDFLAGS = -lm
 
 # Arquivos fontes e objetos
 SRCS = $(wildcard $(SRC_DIR)/*.c $(EFFECTS_SRC_DIR)/*.c)
@@ -23,7 +23,7 @@ OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) $^ -o $@
+	$(CC) $^ -o $@ $(LDFLAGS)
 
 # Compilar arquivos .c para .o
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
