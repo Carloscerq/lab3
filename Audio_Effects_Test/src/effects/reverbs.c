@@ -1,165 +1,103 @@
 #include "effects/reverbs.h"
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <stdio.h>
+#include <stdint.h>
 
-// Configuração global do reverb
 static ReverbConfig reverb;
 
-//---------General functions for reverb types---------
-// Função auxiliar: inicializa um filtro (Comb ou All-Pass)
-static void initFilter(FilterConfig *filter, float delayMs, float decayGain, float sampleRate) {
+// Static buffers for Comb filters
+static float comb1_buffer[6000]; // 29.7ms @44.1kHz
+static float comb2_buffer[6000];  // 18ms
+static float comb3_buffer[6000]; // 45ms
+static float comb4_buffer[6000]; // 60ms
+
+// Static buffers for All-Pass filters
+static float allPass1_buffer[400]; // 5ms
+static float allPass2_buffer[400];  // 1.7ms
+
+static void initFilter(FilterConfig *filter, float delayMs, float decayGain, float sampleRate, float *buffer) {
     filter->delayMs = delayMs;
     filter->decayGain = decayGain;
     filter->delaySamples = (size_t)(delayMs * sampleRate / 1000.0f);
-    filter->bufferSize = filter->delaySamples + 1; // +1 para evitar acessos fora do buffer
-    filter->buffer = calloc(filter->bufferSize, sizeof(float));
+    filter->bufferSize = filter->delaySamples + 1;
+    filter->buffer = buffer;
     filter->writeIndex = 0;
-    filter->applyDec = 0;
+    memset(filter->buffer, 0, filter->bufferSize * sizeof(float));
 }
 
-static void initFilterAllPass(FilterConfigAllPass *filter, float delayMs, float decayGain, float sampleRate) {
-    filter->delayMs = delayMs;
-    filter->decayGain = decayGain;
-    filter->delaySamples = (size_t)(delayMs * sampleRate / 1000.0f);
-    filter->bufferSize = filter->delaySamples + 1; // +1 para evitar acessos fora do buffer
-    filter->buffer = calloc(filter->bufferSize, sizeof(float));
-    filter->bufferCopy = calloc(filter->bufferSize, sizeof(float));
-    filter->writeIndex = 0;
-    filter->applyDec = 0;
-}
-
-// Função auxiliar: processa uma amostra com um filtro Comb
 static float processCombFilter(FilterConfig *filter, float input) {
-    size_t readIndex = (filter->writeIndex + filter->bufferSize - filter->delaySamples) % filter->bufferSize;
-    
-    float output = input;
+    size_t readIndex = filter->writeIndex + 1;
+    if (readIndex >= filter->bufferSize) readIndex = 0;
 
-    if (filter->writeIndex >= filter->delaySamples || filter->applyDec == 1){
-        output += filter->buffer[readIndex] * filter->decayGain;
-        filter->applyDec = 1;
-    }
-    
-    // Atualiza o buffer
+    float output = input + filter->buffer[readIndex] * filter->decayGain;
+
     filter->buffer[filter->writeIndex] = output;
-    filter->writeIndex = (filter->writeIndex + 1) % filter->bufferSize;
+    filter->writeIndex++;
+    if (filter->writeIndex >= filter->bufferSize) filter->writeIndex = 0;
 
     return output;
 }
 
-// Função auxiliar: processa uma amostra com um filtro All-Pass
-static float processAllPassFilter(FilterConfigAllPass *filter, float input) {
-    size_t readIndex = (filter->writeIndex + filter->bufferSize - filter->delaySamples) % filter->bufferSize;
+static float processAllPassFilter(FilterConfig *filter, float input) {
+    size_t readIndex = filter->writeIndex + 1;
+    if (readIndex >= filter->bufferSize) readIndex = 0;
 
-    float delayedSample = 0;
-    
-    if (filter->writeIndex >= filter->delaySamples || filter->applyDec == 1){
-        delayedSample = filter->buffer[readIndex];
-        filter->applyDec = 1;
-    }    
+    float delayed = filter->buffer[readIndex];
+    float v = input - filter->decayGain * delayed;
+    float output = delayed + filter->decayGain * v;
 
-    float output = input + delayedSample * filter->decayGain;
-    
-    if (filter->applyDec){
-        output -= filter->bufferCopy[readIndex] * filter->decayGain;
-    }
-
-    // Atualiza o buffer
-    filter->buffer[filter->writeIndex] = output;
-    filter->bufferCopy[filter->writeIndex] = input;
-    filter->writeIndex = (filter->writeIndex + 1) % filter->bufferSize;
+    filter->buffer[filter->writeIndex] = v;
+    filter->writeIndex++;
+    if (filter->writeIndex >= filter->bufferSize) filter->writeIndex = 0;
 
     return output;
 }
 
-// Processa um bloco de amostras com o reverb
 void processReverbBlock(const int16_t *input, int16_t *output, size_t blockSize) {
-    size_t i, j;
-    for (i = 0; i < blockSize; ++i) {
-        float drySample = (float)input[i] / 32768.0f; // Normaliza para -1 a 1
-        float wetSample = 0.0f;
+    static const float scale = 1.0f / 32768.0f;
+    static const float invCombCount = 1.0f / 4.0f; // 4 comb filters
 
-        // Aplica filtros Comb em paralelo
-        for (j = 0; j < reverb.numCombFilters; ++j) {
-            wetSample += processCombFilter(&reverb.combFilters[j], drySample);
-        }
+    for (size_t i = 0; i < blockSize; ++i) {
+        float dry = input[i] * scale;
+        float wet = 0.0f;
 
-        // Normaliza o resultado dos filtros Comb
-        wetSample /= reverb.numCombFilters;
+        // Process Comb filters in parallel
+        wet += processCombFilter(&reverb.combFilters[0], dry);
+        wet += processCombFilter(&reverb.combFilters[1], dry);
+        wet += processCombFilter(&reverb.combFilters[2], dry);
+        wet += processCombFilter(&reverb.combFilters[3], dry);
+        wet *= invCombCount;
 
-        // Aplica filtros All-Pass em série
-        for (j = 0; j < reverb.numAllPassFilters; ++j) {
-            wetSample = processAllPassFilter(&reverb.allPassFilters[j], wetSample);
-        }
+        // Process All-Pass filters in series
+        wet = processAllPassFilter(&reverb.allPassFilters[0], wet);
+        wet = processAllPassFilter(&reverb.allPassFilters[1], wet);
 
-        // Mixagem Dry/Wet
-        float finalSample = (1.0f - reverb.wetLevel) * drySample + reverb.wetLevel * wetSample;
-
-        // Limita o valor final para evitar estouros
-        finalSample = fminf(fmaxf(finalSample, -1.0f), 1.0f);
-
-        // Converte de volta para 16 bits
-        output[i] = (int16_t)(finalSample * 32768.0f);
+        // Mix wet/dry and clamp
+        float out = (1.0f - reverb.wetLevel) * dry + reverb.wetLevel * wet;
+        out = out < -1.0f ? -1.0f : out > 1.0f ? 1.0f : out;
+        output[i] = (int16_t)(out * 32768.0f);
     }
 }
 
-//---------Initialization for different reverbs---------
-// Initialize the Hall2 reverb
 void initReverbHall2(void) {
     static FilterConfig combFilters[4];
-    static FilterConfigAllPass allPassFilters[2];
+    static FilterConfig allPassFilters[2];
 
-    reverb.numCombFilters = 4;
-    reverb.numAllPassFilters = 2;
-    reverb.combFilters = combFilters;
-    reverb.allPassFilters = allPassFilters;
-    reverb.wetLevel = 0.5f;
     reverb.sampleRate = 44100.0f;
+    reverb.wetLevel = 0.8f;
+    reverb.numCombFilters = 4;
+    reverb.combFilters = combFilters;
+    reverb.numAllPassFilters = 2;
+    reverb.allPassFilters = allPassFilters;
 
-    float combDelays[] = {29.7f, 18.0f, 45.0f, 60.0f};
-    float combGains[] = {0.805f, 0.827f, 0.783f, 0.764f};
-    size_t i;
-    for (i = 0; i < reverb.numCombFilters; ++i) {
-        initFilter(&reverb.combFilters[i], combDelays[i], combGains[i], reverb.sampleRate);
-    }
+    // Initialize Comb filters
+    initFilter(&combFilters[0], 50.0f, 0.705f, reverb.sampleRate, comb1_buffer);
+    initFilter(&combFilters[1], 25.0f, 0.727f, reverb.sampleRate, comb2_buffer);
+    initFilter(&combFilters[2], 75.0f, 0.783f, reverb.sampleRate, comb3_buffer);
+    initFilter(&combFilters[3], 90.0f, 0.764f, reverb.sampleRate, comb4_buffer);
 
-    float allPassDelays[] = {5.0f, 1.7f};
-    float allPassGains[] = {0.7f, 0.7f};
-    for (i = 0; i < reverb.numAllPassFilters; ++i) {
-        initFilterAllPass(&reverb.allPassFilters[i], allPassDelays[i], allPassGains[i], reverb.sampleRate);
-    }
-}
-
-// Libera buffers ao reinicializar
-void freeReverbBuffers() {
-    for (size_t i = 0; i < reverb.numCombFilters; ++i) {
-        free(reverb.combFilters[i].buffer);
-    }
-    for (size_t i = 0; i < reverb.numAllPassFilters; ++i) {
-        free(reverb.allPassFilters[i].buffer);
-    }
-}
-
-// TODO: create starters for other reverbs
-void initReverbStageA(void){
-
-}
-
-void initReverbStageBb(void){
-
-}
-
-
-void initReverbStageDb(void){
-
-}
-
-void initReverbStageFb(void){
-
-}
-
-
-void initReverbStageGTHT(void){
-
+    // Initialize All-Pass filters
+    initFilter(&allPassFilters[0], 2.5f, 0.6f, reverb.sampleRate, allPass1_buffer);
+    initFilter(&allPassFilters[1], 1.2f, 0.7f, reverb.sampleRate, allPass2_buffer);
 }

@@ -59,7 +59,7 @@ void initPhaser(void) {
 }
 
 // Processa um bloco de amostras com o Phaser
-void processPhaser(Int16 *input, Int16 *output, size_t blockSize) {
+void processPhaser(const Int16 *input, Int16 *output, size_t blockSize) {
     size_t i;
     Int32 j;
     for (i = 0; i < blockSize; i++) {

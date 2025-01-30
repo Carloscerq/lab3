@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#define EFFECTS_LENGTH 8
+#define EFFECTS_LENGTH 3
 
 typedef struct {
     int8_t id;

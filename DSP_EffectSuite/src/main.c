@@ -51,6 +51,7 @@ void main(void){
         if (getSelectedMode() == REALTIME_MODE && getCurrentState() == STATE_EFFECT_SELECT_RUNNING) {
             startAudioDma();
             EZDSP5502_MCBSP_init();  // Configure and start McBSP
+            effects[getSelectedEffectIndex()].init();
 
             while (getCurrentState() == STATE_EFFECT_SELECT_RUNNING) {
                 stateMachineRun();
@@ -66,13 +67,13 @@ void main(void){
         }
 
         if (getSelectedMode() == FILE_MODE && getCurrentState() == STATE_EFFECT_FILE_RUNNING) {
-            const char *inputFile = "../data/original.wav";
+            const char *inputFile = "..\\data\\original.wav";
             char outputFile[50];
 
             const char *effectFileName = effects[getSelectedEffectIndex()].file_name;
 
-            snprintf(outputFile, sizeof(outputFile), "../data/%s_output.wav", effectFileName);
-
+            snprintf(outputFile, sizeof(outputFile), "..\\data\\%s_output.wav", effectFileName);
+            effects[getSelectedEffectIndex()].init();
             processFile(inputFile, outputFile, getSelectedEffectIndex());
 
             // Notificar a FSM de que a operação foi concluída
@@ -128,9 +129,10 @@ void processFile(const char *inputFile, const char *outputFile, Int16 effectInde
     FILE *fpIn, *fpOut;
     Int16 inputBuffer[BUFF_SIZE];
     Int16 outputBuffer[BUFF_SIZE];
-    Uint8 temp[2 * BUFF_SIZE];
+    Int8 temp[2 * BUFF_SIZE];
+    //Int8 temp2[2 * BUFF_SIZE];
     Uint8 waveHeader[44];
-    Int32 cnt = 0;
+    Uint32 cnt = 0;
 
     // Imprimir nomes dos arquivos e índice do efeito
     printf("Input File: %s\n", inputFile);
@@ -148,15 +150,16 @@ void processFile(const char *inputFile, const char *outputFile, Int16 effectInde
     }
 
     // Ler e escrever cabeçalho do arquivo de entrada
-    fread(waveHeader, sizeof(Uint8), 44, fpIn);
-    fwrite(waveHeader, sizeof(Uint8), 44, fpOut);
+    fread(waveHeader, sizeof(Int8), 44, fpIn);
+    fwrite(waveHeader, sizeof(Int8), 44, fpOut);
 
     // Processar dados de áudio em blocos
-    Uint16 i, j;
-    while (fread(temp, sizeof(Uint8), 2 * BUFF_SIZE, fpIn) == 2 * BUFF_SIZE) {
+    Int16 i, j;
+    while ((fread(&temp, sizeof(Int8), 2 * BUFF_SIZE, fpIn)) > 0) {
         // Combinar bytes para formar Int16 no buffer de entrada
         for ( i = 0, j = 0; i < BUFF_SIZE; i++) {
-            inputBuffer[i] = temp[j++] | (temp[j++] << 8);
+            inputBuffer[i] = (temp[j]&0xFF)|(temp[j+1]<<8);;
+            j += 2;
         }
 
         // Aplicar o efeito ao bloco de amostras
@@ -169,15 +172,15 @@ void processFile(const char *inputFile, const char *outputFile, Int16 effectInde
         }
 
         // Escrever bloco processado no arquivo de saída
-        fwrite(temp, sizeof(Uint8), 2 * BUFF_SIZE, fpOut);
+        fwrite(&temp, sizeof(short), 2 * BUFF_SIZE, fpOut);
         cnt += BUFF_SIZE;
         printf("%ld data samples processed\n", cnt);
     }
 
     // Atualizar cabeçalho WAV com informações finais
-    wHeader(waveHeader, 8000, 8000, cnt * 2);  // Atualizar com o tamanho do arquivo processado
+    wHeader(waveHeader, 8000, 8000, cnt<<1);  // Atualizar com o tamanho do arquivo processado
     rewind(fpOut);  // Voltar ao início do arquivo de saída
-    fwrite(waveHeader, sizeof(Uint8), 44, fpOut);  // Sobrescrever o cabeçalho
+    fwrite(waveHeader, sizeof(Int8), 44, fpOut);  // Sobrescrever o cabeçalho
 
     fclose(fpIn);
     fclose(fpOut);

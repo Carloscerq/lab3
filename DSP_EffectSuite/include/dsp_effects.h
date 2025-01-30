@@ -10,7 +10,7 @@ typedef struct {
     Int8 id;
     char file_name[20];
     void (*init)(void);
-    void (*process)(Int16 *input, Int16 *output, size_t blockSize);
+    void (*process)(const Int16 *input, Int16 *output, size_t blockSize);
 } Effect;
 
 extern Effect effects[EFFECTS_LENGTH];

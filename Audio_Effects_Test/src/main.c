@@ -21,7 +21,7 @@ int main(void){
 
     const char *effectFileName = effects[INDEX_EFFECT].file_name;
 
-    snprintf(outputFile, sizeof(outputFile), "data/%s_output.wav", effectFileName);
+    snprintf(outputFile, sizeof(outputFile), "data/%s_output1.wav", effectFileName);
 
     effects[INDEX_EFFECT].init();
     processFile(inputFile, outputFile, INDEX_EFFECT);

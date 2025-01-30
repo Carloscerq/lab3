@@ -4,6 +4,6 @@ void initAutoWah(void){
 
 }
 
-void processAutoWah(Int16 *input, Int16 *output, size_t blockSize){
+void processAutoWah(const Int16 *input, Int16 *output, size_t blockSize){
 
 }
