@@ -7,8 +7,7 @@
 
 #define AIC3204_I2C_ADDR 0x18
 
-Int16 AIC3204_rset( Uint16 regnum, Uint16 regval )
-{
+Int16 AIC3204_rset( Uint16 regnum, Uint16 regval) {
     Uint16 cmd[2];
     cmd[0] = regnum & 0x007F;       // 7-bit Device Register
     cmd[1] = regval;                // 8-bit Register Data
@@ -19,8 +18,7 @@ Int16 AIC3204_rset( Uint16 regnum, Uint16 regval )
 }
 
 
-void Init_AIC3204(Int16 gDAC, Uint16 gADC ){
-
+void Init_AIC3204(Int16 gDAC, Uint16 gADC) {
     /* Configure AIC3204 */
     AIC3204_rset( 0, 0 );      // Select page 0
     AIC3204_rset( 1, 1 );      // Reset codec
@@ -71,7 +69,7 @@ void Init_AIC3204(Int16 gDAC, Uint16 gADC ){
     AIC3204_rset( 0x39, 0xc0 );// CM_1 (common mode) to RADC_M through 40 kohm
     AIC3204_rset( 0x3b, 50 );   // MIC_PGA_L unmute
     AIC3204_rset( 0x3c, 50 );   // MIC_PGA_R unmute
-    AIC3204_rset( 51, 0x48) ; // Aumente a polarização do MIC usando o LDO interno TESTEEE
+    AIC3204_rset( 51, 0x48) ; // Aumente a polarizaï¿½ï¿½o do MIC usando o LDO interno TESTEEE
     AIC3204_rset( 59, 0x3c); // Ative o MICPGA esquerdo, ganho = 30 dB TESTEEE
     AIC3204_rset( 60, 0x3c); // Ative o MICPGA direito, ganho = 30 dB TESTEEE
     AIC3204_rset( 0, 0 );      // Select page 0

@@ -1,24 +1,18 @@
-
 #ifndef INCLUDE_DSP_EFFECTS_H_
 #define INCLUDE_DSP_EFFECTS_H_
+
+#include <stdlib.h>
+#include "tistdtypes.h"
 
 #define EFFECTS_LENGTH 8
 
 typedef struct {
-    int id;
+    Int8 id;
     char file_name[20];
+    void (*init)(void);
+    void (*process)(const Int16 *input, Int16 *output, size_t blockSize);
 } Effect;
 
-Effect effects[EFFECTS_LENGTH] = {
-    {0, "REV-HALL2"},
-    {1, "REV-STAGE A"},
-    {2, "REV-STAGE Bb"}, // TODO: Bb
-    {3, "REV-STAGE Db"}, // TODO: Db
-    {4, "REV-STAGE Fb"}, // TODO: Fb
-    {5, "RET-STAGE GTHT"},
-    {6, "PHASER"},
-    {7, "AUTO-WAH"}
-};
-
+extern Effect effects[EFFECTS_LENGTH];
 
 #endif /* INCLUDE_DSP_EFFECTS_H_ */

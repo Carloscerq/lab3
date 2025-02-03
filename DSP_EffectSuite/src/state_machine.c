@@ -5,13 +5,9 @@
 #include "buttons.h"
 
 //---------Global data definition---------
-
-#define REALTIME 0
-#define FILE 1
-
 static State currentState = STATE_WELCOME;
 static Uint8 selectedEffectIndex = 0;
-static Uint8 selectedMode = REALTIME; // 0 = Tempo Real, 1 = Arquivo
+static Uint8 selectedMode = REALTIME_MODE; // 0 = Tempo Real, 1 = Arquivo
 
 char message[10];
 
@@ -43,8 +39,6 @@ static void changeState(State newState) {
             if (selectedEffectIndex < EFFECTS_LENGTH) {// number of DSP effects + 1
                 sprintf(message, "%s", effects[selectedEffectIndex].file_name);
                 oled_writeText(message, 0);
-            } else if (selectedEffectIndex == EFFECTS_LENGTH) {
-                oled_writeText("ALL", 0);
             } else {
                 oled_writeText("-- PREVIOUS MENU", 0);
             }
@@ -70,7 +64,13 @@ static void changeState(State newState) {
         case STATE_EFFECT_FILE_RUNNING:
             sprintf(message, "%s", effects[selectedEffectIndex].file_name);
             oled_writeText(message, 0);
-            oled_writeText("APPLYING.. 2:BACK", 1);
+            oled_writeText("APPLYING..       ", 1);
+            break;
+
+        case STATE_EFFECT_FILE_FINISHED:
+            sprintf(message, "%s", effects[selectedEffectIndex].file_name);
+            oled_writeText(message, 0);
+            oled_writeText("FINISHED.. 2:BACK", 1);
             break;
 
         default:
@@ -103,22 +103,20 @@ void stateMachineRun(void) {
             if (getButtonState(BUTTON_NEXT)) {
                 selectedMode = !selectedMode;
                 changeState(STATE_SELECT_MODE);
-            } else if (getButtonState(BUTTON_SELECT) && selectedMode == REALTIME) {
+            } else if (getButtonState(BUTTON_SELECT) && selectedMode == REALTIME_MODE) {
                 changeState(STATE_SELECT_EFFECT);
-            } else if (getButtonState(BUTTON_SELECT) && selectedMode == FILE) {
+            } else if (getButtonState(BUTTON_SELECT) && selectedMode == FILE_MODE) {
                 changeState(STATE_FILE_MODE);
             }
             break;
 
         case STATE_FILE_MODE:
             if (getButtonState(BUTTON_NEXT)) {
-                selectedEffectIndex = (selectedEffectIndex + 1) % (EFFECTS_LENGTH + 2); // number of DSP effects + 1
+                selectedEffectIndex = (selectedEffectIndex + 1) % (EFFECTS_LENGTH + 1); // number of DSP effects + 1
                 changeState(STATE_FILE_MODE);
             } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex < EFFECTS_LENGTH) {
                 changeState(STATE_EFFECT_FILE_RUNNING);
             } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex == EFFECTS_LENGTH){
-                changeState(STATE_EFFECT_FILE_RUNNING); // ALL CASE
-            } else if (getButtonState(BUTTON_SELECT) && selectedEffectIndex == EFFECTS_LENGTH + 1){
                 changeState(STATE_SELECT_MODE);
             }
             break;
@@ -141,6 +139,9 @@ void stateMachineRun(void) {
             break;
             
         case STATE_EFFECT_FILE_RUNNING:
+            break;
+
+        case STATE_EFFECT_FILE_FINISHED:
             if (getButtonState(BUTTON_SELECT)) {
                 changeState(STATE_FILE_MODE);
             }
@@ -149,4 +150,22 @@ void stateMachineRun(void) {
         default:
             break;
     }
+}
+
+void stateMachineNotifyFileComplete(void) {
+    if (currentState == STATE_EFFECT_FILE_RUNNING) {
+        changeState(STATE_FILE_MODE);  // Volta ao modo de seleção de arquivos
+    }
+}
+
+State getCurrentState(void) {
+    return currentState;
+}
+
+Uint8 getSelectedEffectIndex(void) {
+    return selectedEffectIndex;
+}
+
+Uint8 getSelectedMode(void) {
+    return selectedMode;
 }
