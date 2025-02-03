@@ -147,23 +147,128 @@ void freeReverbBuffers() {
 }
 // TODO: create starters for other reverbs
 void initReverbStageA(void){
+    static FilterConfig combFilters[4];
+    static FilterConfigAllPass allPassFilters[2];
 
+    reverb.numCombFilters = 4;
+    reverb.numAllPassFilters = 2;
+    reverb.combFilters = combFilters;
+    reverb.allPassFilters = allPassFilters;
+    reverb.wetLevel = 0.5f;
+    reverb.sampleRate = 44100.0f;
+
+    float combDelays[] = {25.0f, 20.0f, 35.0f, 65.0f};
+    float combGains[] = {0.805f, 0.827f, 0.783f, 0.764f};
+    size_t i;
+    for (i = 0; i < reverb.numCombFilters; ++i) {
+        initFilter(&reverb.combFilters[i], combDelays[i], combGains[i], reverb.sampleRate);
+    }
+
+    float allPassDelays[] = {5.0f, 1.7f};
+    float allPassGains[] = {0.7f, 0.7f};
+    for (i = 0; i < reverb.numAllPassFilters; ++i) {
+        initFilterAllPass(&reverb.allPassFilters[i], allPassDelays[i], allPassGains[i], reverb.sampleRate);
+    }
 }
 
 void initReverbStageBb(void){
+    static FilterConfig combFilters[4];
+    static FilterConfigAllPass allPassFilters[2];
 
+    reverb.numCombFilters = 4;
+    reverb.numAllPassFilters = 2;
+    reverb.combFilters = combFilters;
+    reverb.allPassFilters = allPassFilters;
+    reverb.wetLevel = 0.5f;
+    reverb.sampleRate = 44100.0f;
+
+    float combDelays[] = {10.0f, 10.0f, 40.0f, 60.0f};
+    float combGains[] = {0.805f, 0.827f, 0.783f, 0.764f};
+    size_t i;
+    for (i = 0; i < reverb.numCombFilters; ++i) {
+        initFilter(&reverb.combFilters[i], combDelays[i], combGains[i], reverb.sampleRate);
+    }
+
+    float allPassDelays[] = {5.0f, 1.7f};
+    float allPassGains[] = {0.7f, 0.7f};
+    for (i = 0; i < reverb.numAllPassFilters; ++i) {
+        initFilterAllPass(&reverb.allPassFilters[i], allPassDelays[i], allPassGains[i], reverb.sampleRate);
+    }
 }
 
 
 void initReverbStageDb(void){
+    static FilterConfig combFilters[4];
+    static FilterConfigAllPass allPassFilters[2];
 
+    reverb.numCombFilters = 4;
+    reverb.numAllPassFilters = 2;
+    reverb.combFilters = combFilters;
+    reverb.allPassFilters = allPassFilters;
+    reverb.wetLevel = 0.5f;
+    reverb.sampleRate = 44100.0f;
+
+    float combDelays[] = {15.0f, 30.0f, 45.0f, 50.0f};
+    float combGains[] = {0.805f, 0.827f, 0.783f, 0.764f};
+    size_t i;
+    for (i = 0; i < reverb.numCombFilters; ++i) {
+        initFilter(&reverb.combFilters[i], combDelays[i], combGains[i], reverb.sampleRate);
+    }
+
+    float allPassDelays[] = {5.0f, 1.7f};
+    float allPassGains[] = {0.7f, 0.7f};
+    for (i = 0; i < reverb.numAllPassFilters; ++i) {
+        initFilterAllPass(&reverb.allPassFilters[i], allPassDelays[i], allPassGains[i], reverb.sampleRate);
+    }
 }
 
 void initReverbStageFb(void){
+    static FilterConfig combFilters[4];
+    static FilterConfigAllPass allPassFilters[2];
 
+    reverb.numCombFilters = 4;
+    reverb.numAllPassFilters = 2;
+    reverb.combFilters = combFilters;
+    reverb.allPassFilters = allPassFilters;
+    reverb.wetLevel = 0.5f;
+    reverb.sampleRate = 44100.0f;
+
+    float combDelays[] = {40.0f, 38.0f, 55.0f, 80.0f};
+    float combGains[] = {0.805f, 0.827f, 0.783f, 0.764f};
+    size_t i;
+    for (i = 0; i < reverb.numCombFilters; ++i) {
+        initFilter(&reverb.combFilters[i], combDelays[i], combGains[i], reverb.sampleRate);
+    }
+
+    float allPassDelays[] = {5.0f, 1.7f};
+    float allPassGains[] = {0.7f, 0.7f};
+    for (i = 0; i < reverb.numAllPassFilters; ++i) {
+        initFilterAllPass(&reverb.allPassFilters[i], allPassDelays[i], allPassGains[i], reverb.sampleRate);
+    }
 }
 
 
 void initReverbStageGTHT(void){
+    static FilterConfig combFilters[4];
+    static FilterConfigAllPass allPassFilters[2];
 
+    reverb.numCombFilters = 4;
+    reverb.numAllPassFilters = 2;
+    reverb.combFilters = combFilters;
+    reverb.allPassFilters = allPassFilters;
+    reverb.wetLevel = 0.5f;
+    reverb.sampleRate = 44100.0f;
+
+    float combDelays[] = {2.0f, 10.0f, 32.0f, 40.0f};
+    float combGains[] = {0.805f, 0.827f, 0.783f, 0.764f};
+    size_t i;
+    for (i = 0; i < reverb.numCombFilters; ++i) {
+        initFilter(&reverb.combFilters[i], combDelays[i], combGains[i], reverb.sampleRate);
+    }
+
+    float allPassDelays[] = {5.0f, 1.7f};
+    float allPassGains[] = {0.7f, 0.7f};
+    for (i = 0; i < reverb.numAllPassFilters; ++i) {
+        initFilterAllPass(&reverb.allPassFilters[i], allPassDelays[i], allPassGains[i], reverb.sampleRate);
+    }
 }
