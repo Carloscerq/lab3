@@ -2,9 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-SHELL = cmd.exe
-
-CG_TOOL_ROOT := C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1
+CG_TOOL_ROOT := /home/carlos/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -30,8 +28,8 @@ $(GEN_CMDS__FLAG) \
 
 -include ../makefile.init
 
-RM := DEL /F
-RMDIR := RMDIR /S/Q
+RM := rm -rf
+RMDIR := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
@@ -151,16 +149,16 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 DSP_EffectSuite.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: C5500 Linker'
-	"C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/bin/cl55" -v5502 --memory_model=large -g --define=c5502 --display_error_number --diag_warning=225 --ptrdiff_size=32 -z -m"DSP_EffectSuite.map" --stack_size=0x200 --heap_size=0x400 -i"C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/lib" -i"C:/Users/ceces/workspace_v12/lib" -i"C:/Users/ceces/workspace_v12/C55xxCSL/lib" -i"C:/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include" --reread_libs --display_error_number --warn_sections --xml_link_info="DSP_EffectSuite_linkInfo.xml" --rom_model --sys_stacksize=0x200 -o "DSP_EffectSuite.out" $(ORDERED_OBJS)
+	"/home/carlos/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/bin/cl55" -v5502 --memory_model=large -g --define=c5502 --display_error_number --diag_warning=225 --ptrdiff_size=32 -z -m"DSP_EffectSuite.map" --stack_size=0x200 --heap_size=0x400 -i"/home/carlos/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/lib" -i"/home/carlos/workspace_v12/lib" -i"/home/carlos/workspace_v12/C55xxCSL/lib" -i"/home/carlos/ti/ccs1281/ccs/tools/compiler/c5500_4.4.1/include" --reread_libs --display_error_number --warn_sections --xml_link_info="DSP_EffectSuite_linkInfo.xml" --rom_model --sys_stacksize=0x200 -o "DSP_EffectSuite.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "src\aic3204.obj" "src\buttons.obj" "src\dma.obj" "src\dsp_effects.obj" "src\lcd.obj" "src\main.obj" "src\oled.obj" "src\state_machine.obj" "src\vectors_dma.obj" "src\effects\autowah.obj" "src\effects\phaser.obj" "src\effects\reverbs.obj" 
-	-$(RM) "src\vectors_dma.d" 
-	-$(RM) "src\aic3204.d" "src\buttons.d" "src\dma.d" "src\dsp_effects.d" "src\lcd.d" "src\main.d" "src\oled.d" "src\state_machine.d" "src\effects\autowah.d" "src\effects\phaser.d" "src\effects\reverbs.d" 
+	-$(RM) "src/aic3204.obj" "src/buttons.obj" "src/dma.obj" "src/dsp_effects.obj" "src/lcd.obj" "src/main.obj" "src/oled.obj" "src/state_machine.obj" "src/vectors_dma.obj" "src/effects/autowah.obj" "src/effects/phaser.obj" "src/effects/reverbs.obj" 
+	-$(RM) "src/vectors_dma.d" 
+	-$(RM) "src/aic3204.d" "src/buttons.d" "src/dma.d" "src/dsp_effects.d" "src/lcd.d" "src/main.d" "src/oled.d" "src/state_machine.d" "src/effects/autowah.d" "src/effects/phaser.d" "src/effects/reverbs.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
