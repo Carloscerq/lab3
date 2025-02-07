@@ -1,0 +1,6 @@
+[submodule "effects"]
+	path = effects
+	url = https://github.com/Carloscerq/effects
+[submodule "audio-effects"]
+	path = audio-effects
+	url = https://github.com/RiosJoaoP/audio-effects
